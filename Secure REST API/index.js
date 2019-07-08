@@ -3,11 +3,9 @@ const app = express();
 const bodyParser = require('body-parser');
 
 const config = require("./common/config/env.config")
+const TestRouter = require("./test/routes.config")
 
-const logger = function(req, res) {
-    console.log(req.body)
-    res.status(201).json({ test: "test" });
-}
+
 
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -22,10 +20,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }))
 
-app.get("/users", [
-    logger
-])
+TestRouter.routesConfig(app)
 
-app.listen(config.PORT, function() {
-    console.log("API Server Listening at Port: " + config.PORT)
+app.listen(config.port, function() {
+    console.log("API Server Listening at Port: " + config.port)
 })
