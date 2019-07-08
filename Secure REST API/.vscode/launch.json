@@ -20,8 +20,7 @@
                   "${workspaceFolder}/mocha.opts",
                   "--timeout",
                   "999999",
-                  "'${workspaceFolder}/js_project/*.test.js'"
-                  // "'${workspaceFolder}/{,!(node_modules)/}*/*.test.js'"
+                  "'${workspaceFolder}/{,!(node_modules)/}*/*.test.js'"
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
