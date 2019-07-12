@@ -1,6 +1,8 @@
 # docker-tutorial
 Gentle introduction to docker
 
+<span style="border-left: 2px solid orange">
+
 # Containers
 
 
@@ -89,6 +91,8 @@ The follwing will pull the specific image with the specified tag from dockerhub 
 docker run -p 4000:80 username/repository:tag
 ```
 
+</span>
+<span style="border-left: 2px solid green">
 
 # Services
 
@@ -146,10 +150,10 @@ The service and network exist as addressable and identifiable entities
 2. The service is **named** *web*
 3. Pull the service's image from ...
 4. Deployment policy:
-    - 5 replicas at any given time
-    - Limit cpu usage to 10% for each replica
-    - Allocate 50M RAM of memory to each replica
-    - On failure, restart failed replica
+    * 5 replicas at any given time
+    * Limit cpu usage to 10% for each replica
+    * Allocate 50M RAM of memory to each replica
+    * On failure, restart failed replica
 5. Forward replica's internal port 80 to localhost's port 4000 via a load-balancing network called **webnet** defined after
 
 6. Since webnet does not have any specified parameters, it is configured with default parameters
@@ -200,3 +204,9 @@ Stop the app/stack
 
 Leave the swarm
 ```docker swarm leave --force```
+
+</span>
+
+<span style="border-left: 2px solid blue">
+
+</span>
