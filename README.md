@@ -40,33 +40,49 @@ or execute
 ```
 curl http://localhost:4000
 ```
-note that port 80 is first exposed when the container is setup in the docker file (EXPOSE ).
+Note that port 80 is first exposed when the container is setup in the docker file (EXPOSE ).
 Then a mapping can be done between the container's port 80 and localhost:4000 (docker run -p)
 
+Also note that myImageName is the name of the image that generated the container.
+Once the container is spawned it gets its own ID (similar to process id) and its own name
 
-#also note that myImageName is the name of the image that generated the container
-#once the container is spawned it gets its own ID (similar to process id) and its own name
-#log in runninng container with
+Log in runninng container with
+```
 docker exec -it <container-name> sh
 docker exec -it <container-name> bash
+```
+Also note that the app's host name is the container id
 
-#also note that the app's host name is the container id
 
+## Pushing Image to Registry
 
-# a registry is a collection of repository which is a collection of images
-# an account can create many repositories like github
+```
+A registry is a collection of repository which is a collection of images
+An account can create many repositories like github
+```
+
+```
 docker login
+```
 
-#The notation for associating a local image with a repository on a registry is username/repository:tag. 
-#The tag is optional, but recommended, since it is the mechanism that registries use to give Docker images a version
+The notation for associating a local image with a repository on a registry is username/repository:tag. 
+The tag is optional, but recommended, since it is the mechanism that registries use to give Docker images a version
 docker tag myImageName kmurphs/get-started:part2
-#At this point we just tagged the image in a way that allows it to be pushed to the repository. However, at this point,
-#it is an image like any other and can be viewed with:
+
+At this point we just tagged the image in a way that allows it to be pushed to the repository. However, at this point,
+it is an image like any other and can be viewed with:
+```
 docker image ls 
+```
 
-#once the tagging is done,
+Once the tagging is done,
+```
 docker push username/repository:tag
-#now it is visible in dockerhub
+```
+Now it is visible in dockerhub
 
-#This will pull the specific image with the specified tag from dockerhub if the image is not found on your system
+
+The follwing will pull the specific image with the specified tag from dockerhub if the image is not found on your system
+```
 docker run -p 4000:80 username/repository:tag
+```
