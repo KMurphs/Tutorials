@@ -1,6 +1,9 @@
 # docker-tutorial
 Gentle introduction to docker
 
+
+## First commands
+```
 docker --version
 
 docker info
@@ -10,23 +13,35 @@ docker image ls --all
 docker container ls --all
 docker container ls -aq
 
-
 docker run hello-world
+```
 
-#The . specifies the current directory, omitting the :vxxxxx means that the image will be versioned at "latest" instead of "xxxxx"
+
+## Building an image
+The . specifies the current directory, omitting the :vxxxxx means that the image will be versioned at "latest" instead of "xxxxx"
+
+```
 docker build --tag=myImageName .
 docker build --tag=myImageName:v1.0.1 .
+```
 
-#run image port 4000 on local host is mapped to port 80 on container
-#app.py specified that the "server" would run at 0.0.0.0:80 which is mapped to our localhost:4000
+
+## Running an image - Deploying the image as container
+run image port 4000 on local host is mapped to port 80 on container
+app.py specified that the "server" would run at 0.0.0.0:80 which is mapped to our localhost:4000
+```
 docker run -p 4000:80 friendlyhello_mytag
-
-#visit
+```
+visit
+```
 http://localhost:4000
+```
+or execute
+```
 curl http://localhost:4000
-
-#note that port 80 is first exposed when the container is setup in the docker file (EXPOSE ).
-#Then a mapping can be done between the container's port 80 and localhost:4000 (docker run -p)
+```
+note that port 80 is first exposed when the container is setup in the docker file (EXPOSE ).
+Then a mapping can be done between the container's port 80 and localhost:4000 (docker run -p)
 
 
 #also note that myImageName is the name of the image that generated the container
