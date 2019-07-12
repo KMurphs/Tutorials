@@ -1,7 +1,7 @@
 # docker-tutorial
 Gentle introduction to docker
 
-<span style="border-left: 2px solid orange">
+<div style="border-left: 2px solid orange">
 
 # Containers
 
@@ -91,8 +91,8 @@ The follwing will pull the specific image with the specified tag from dockerhub 
 docker run -p 4000:80 username/repository:tag
 ```
 
-</span>
-<span style="border-left: 2px solid green">
+</div>
+<div style="border-left: 2px solid green">
 
 # Services
 
@@ -205,8 +205,8 @@ Stop the app/stack
 Leave the swarm
 ```docker swarm leave --force```
 
-</span>
+</div>
 
-<span style="border-left: 2px solid blue">
+<div style="border-left: 2px solid blue">
 
-</span>
+</div>
