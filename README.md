@@ -145,10 +145,10 @@ The service and network exist as addressable and identifiable entities
 2. The service is **named** *web*
 3. Pull the service's image from ...
 4. Deployment policy:
-- 5 replicas at any given time
-- Limit cpu usage to 10% for each replica
-- Allocate 50M RAM of memory to each replica
-- On failure, restart failed replica
+  - 5 replicas at any given time
+  - Limit cpu usage to 10% for each replica
+  - Allocate 50M RAM of memory to each replica
+  - On failure, restart failed replica
 5. Forward replica's internal port 80 to localhost's port 4000 via a load-balancing network called **webnet** defined after
 
 6. Since webnet does not have any specified parameters, it is configured with default parameters
