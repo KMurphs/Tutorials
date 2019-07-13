@@ -97,12 +97,12 @@ docker run -p 4000:80 username/repository:tag
 # Services
 
 The docker environment has 3 levels:
-        ***```
-        Stacks 
-          (Swarms - Indirectly)
-        Services
-        Containers
-        ```***
+***```
+Stacks 
+  (Swarms - Indirectly)
+Services
+Containers
+```***
 
 We dealt with containers in the first part
         ***```
@@ -181,14 +181,11 @@ List services in a stack
 ```
 docker stack services <your app/stack name e.g. getstartedlab>
 ```
-The name of a service is ``<your app/stack name e.g. getstartedlab>_<the network it's configured to use>`` e.g *getstartedlab_web*
+The name of a service is ``<your app/stack name e.g. getstartedlab>_<the network it's configured to use>`` e.g *getstartedlab_web*. 
 A container within a service is called task and receives the name ``<service name>.<incrementing counter>``. 
 The container still get listed with ``docker container ls``
 ```
 docker service ps getstartedlab_web
-```
-
-```
 curl -4 http://localhost:4000
 ```
 Will convince of the load balancing, you will hit different containers as you curl into the docker app/stack
@@ -246,10 +243,10 @@ This [stack overlfow answer](https://stackoverflow.com/questions/47728330/docker
 
 At this point, another error was generated on my windows system.
 The ``docker-machine ls`` showed that even though the IP address were set properly, the following errors showed up:
-  **```
+**```
     Unable to query docker version: Get https://192.168.8.104:2376/v1.15/version: x509: certificate has expired or is not yet valid.   
     Unable to query docker version: Get https://192.168.8.104:2376/v1.15/version: x509: certificate signed by unknown authority
-  ```**
+```**
 
 
 This [issue thread](https://github.com/sparkfabrik/sparkdock/issues/14) and [this docker issue thread](https://github.com/docker/machine/issues/4046) helped. They also reference [this docker doc]( https://docs.docker.com/machine/reference/regenerate-certs/).
