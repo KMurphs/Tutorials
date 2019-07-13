@@ -361,3 +361,112 @@ docker-machine stop <manager machine-name>
 docker-machine start <manager machine-name>
 docker-machine start <workers machine-name>
 ```
+
+
+
+# Stacks
+
+So far, although swarms allow multi-containers, multi-machines application, we have only used one service stretched over 5 containers and 2 machines.
+A stack allows deployment of ***multi-containers, multi-machines, multi-services***
+From the docs:
+> A stack is a group of interrelated services that share dependencies, and can be orchestrated and scaled together. A single stack is capable of defining and coordinating the functionality of an entire application (though very complex applications may want to use multiple stacks).
+
+
+## 2 New Services
+
+We are going to add a visualizer service and a redis database for data persistence.
+
+``docker-compose.yml`` becomes:
+```
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: username/repo:tag
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+    ports:
+      - "80:80"
+    networks:
+      - webnet
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "/home/docker/data:/data"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    command: redis-server --appendonly yes
+    networks:
+      - webnet
+networks:
+  webnet:
+```
+
+Two new services are added:
+1. A **visualizer Service** based on the **image** available at the URL given, exposed at **port 8080** on the stack/swarm/cluster/from the outside world and **port 8080** on the container hosting the image replica. It accesses the **host's docker socket file on its volume**, will be deployed **only on the manager node** and will use the **webnet network policy**.
+2. A **Redis database service** from the **image** at the URL specified, exposed at **port 6379** on the stack/swarm/cluster/from the outside world and **port 6379** on the container hosting the image replica. It accesses the **host's volume folder *``/home/docker/data``*** mapped to its *internal folder ``/data``* (This allows the ***data to persist as long as the host machine is not destroyed***. The data will persist after the machine stops, reboots,...). The service will be deployed only on the **manager node** and will use the **webnet network policy**.
+
+
+**Note**:
+  The Redis service always runs on the manager node meaning data it **always** uses the **same** file system. Also, it accesses an **arbitrary** folder on the host **machine** guaranteeing that if nothing else will fiddle with the data there (which should be the case) that data will persist after stop, shutdown restarts of the containers and the machine itself. These 2 facts makes the database a **source of truth** that can be trusted to store the data for our stack/application
+
+
+### Create the "/home/docker/data" folder on the manager node
+
+```
+docker-machine ssh myvm1 "mkdir ./data"
+```
+
+### Redeploy the app
+
+Configure current terminal to talk directly to the node
+```
+docker-machine env myvm1
+```
+
+Redeploy the app
+```
+docker stack deploy -c docker-compose.yml getstartedlab
+```
+
+Verify the statuses of the 3 services
+```
+docker service ls
+```
+
+At this point a visit from the browser at:
+```
+http://192.168.8.104/
+http://192.168.8.104:8080/
+```
+will hit our app's end point and the visualizer's service endpoint. 
+
+
+The visualizer confirms that:
+  3 replicas of our get-started:part2 image are running on the worker. 
+  2 replicas of our get-started:part2 image, 1 instance of the visualizer and 1 instance of the redis database on the node manager
+
+**Note**: 
+  For some reason ``http://192.168.8.104`` works without the need to append the ingress port. 
+  The requests response are way faster (That's probably due to the fact that we were trying to access a non existent database)
+  I always hit the same container on the worker machine for every request (I am inclined to attribute that to the fact that the redis database was non existent before). This also says that for normal request volumes only one container is needed, and that the other ones do nothing until the request volumes force them to start servicing them
