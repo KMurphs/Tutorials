@@ -517,6 +517,7 @@ In the this case, the ``docker service ps getstartedlab_web`` will list the 5 **
   getstartedlab_web.5
 
 
+
 ### Opening PORTS
 
 From the docs:
