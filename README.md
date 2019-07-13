@@ -470,3 +470,48 @@ The visualizer confirms that:
   For some reason ``http://192.168.8.104`` works without the need to append the ingress port. 
   The requests response are way faster (That's probably due to the fact that we were trying to access a non existent database)
   I always hit the same container on the worker machine for every request (I am inclined to attribute that to the fact that the redis database was non existent before). This also says that for normal request volumes only one container is needed, and that the other ones do nothing until the request volumes force them to start servicing them
+
+
+
+# Deploying on the cloud
+
+The good news is that the ``docker-compose.yml`` file used on the development machine can be used unchanged on a production machine.
+
+Configure your machines and initialize the swarm
+```
+docker swarm init
+docker swarm join
+```
+
+Deploy the app
+```
+docker stack deploy -c docker-compose.yml getstartedlab
+```
+
+### Perform some basic checks:
+
+Have a look at your machines statuses:
+```
+docker node ls
+```
+In this case, 2 machines myvm1 and myvm2
+
+
+Havea look at your services statuses
+```
+docker service ls
+```
+In this case, 3 services:
+  getstartedlab_web 
+  getstartedlab_visualizer
+  getstartedlab_redis
+
+```
+docker service ps <service>
+```
+In the this case, the ``docker service ps getstartedlab_web`` will list the 5 ***tasks***/containers providing the service and named
+  getstartedlab_web.1
+  getstartedlab_web.2
+  getstartedlab_web.3
+  getstartedlab_web.4
+  getstartedlab_web.5
