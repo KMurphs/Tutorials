@@ -272,6 +272,7 @@ docker-machine ssh myvm2 "<content of the response that corresponds to the type 
 To leave the swarm
 ```
 docker-machine ssh <relevant machine> "docker swarm leave"
+docker-machine ssh <node manager machine> "docker swarm leave --force"
 ```
 
 
@@ -337,4 +338,26 @@ allowed me to hit the app's endpoints.
 ```
 docker-machine ssh myvm1 "docker container ls"
 docker-machine ssh myvm2 "docker container ls"
+```
+
+### Killing the stack and swarm, Restarting the swarm
+This kills the stack:
+```
+docker stack rm getstartedlab
+```
+
+This kills the swarm:
+```
+docker-machine ssh <worker machine> "docker swarm leave"
+docker-machine ssh <manager machine> "docker swarm leave --force"
+```
+
+Instead of killing the swarm, it can be stop and restarted
+```
+docker-machine stop <workers machine-name>
+docker-machine stop <manager machine-name>
+
+
+docker-machine start <manager machine-name>
+docker-machine start <workers machine-name>
 ```
