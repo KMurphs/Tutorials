@@ -1,7 +1,6 @@
-# docker-tutorial
+# [docker-tutorial](https://docs.docker.com/get-started/part2/)
 Gentle introduction to docker
 
-<div style="border-left: 2px solid orange">
 
 # Containers
 
@@ -91,8 +90,7 @@ The follwing will pull the specific image with the specified tag from dockerhub 
 docker run -p 4000:80 username/repository:tag
 ```
 
-</div>
-<div style="border-left: 2px solid green">
+
 
 # Services
 
@@ -205,8 +203,133 @@ Stop the app/stack
 Leave the swarm
 ```docker swarm leave --force```
 
-</div>
 
-<div style="border-left: 2px solid blue">
 
-</div>
+
+# Swarms
+
+Containers were replicated and integrated by a service. But so far they have been running on the same host/machine.
+Swarms allow ***Multi-container, multi-machine applications***.
+
+Note that machine here can mean physical or virtual machines
+
+A swarm (or swarm cluster) is therefore a "dockerized" cluster of machines (dockerized as opposed to other methods of joining machines together and still running Multi-container, multi-machine applications)
+
+## Swarms CLusters
+A group of physical and/or virtual machines that are running Docker and joined into a cluster.
+One machine is selected to be the ***Swarm Manager*** who executes all the instructions we have used so far, and authorize new machines to join the cluster.
+The other machines are called ***nodes/workers***. They only provide capacity and have no control/influence whatsoever over any other machines. 
+
+```
+docker swarm init
+docker swarm join
+```
+
+
+      ***Setup Windows 10 to run virtual machines***
+      Run HyperV Manager, click Virtual Switch Manager, then Create Virtual Switch of type External with Sharing of active network adapter Enabled.
+      
+      ```
+      docker-machine create -d hyperv --hyperv-virtual-switch "myswitch" myvm1
+      docker-machine create -d hyperv --hyperv-virtual-switch "myswitch" myvm2
+      ```
+
+
+On Windows the terminal hanged at waiting for host to start. To fix this:
+This [stack overlfow answer] helped: (https://stackoverflow.com/questions/47728330/docker-machine-stuck-while-creating)
+  * If you type: ``docker-machine ls``, you will see that the VM is running but hey have no URL. This says that the network address cannot be assigned
+  * Use HyperV Manager to turn off the vms, and make sure they use an external switch adapter that's actually part of a **running** network (Wireless/Ethernet)
+  * User HyperV Manager to start the vms, and confirm the issue is solved by issuing another ``docker-machine ls``. The machine should have an IP address now
+  * **Note**: This [docker doc](https://docs.docker.com/machine/drivers/hyper-v/#example) suggest to reboot after setting up the switch adapter.
+
+At this point, another error was generated on my windows system.
+The ``docker-machine ls`` showed that even though the IP address were set properly, the following errors showed up:
+  * ```
+  Unable to query docker version: Get https://192.168.8.104:2376/v1.15/version: x509: certificate has expired or is not yet valid
+  ```
+  * ```
+  Unable to query docker version: Get https://192.168.8.104:2376/v1.15/version: x509: certificate signed by unknown authority
+  ```
+This [issue thread] (https://github.com/sparkfabrik/sparkdock/issues/14) and [this docker issue thread](https://github.com/docker/machine/issues/4046) helped. They references [this docker doc]( https://docs.docker.com/machine/reference/regenerate-certs/)
+      ```
+      docker-machine regenerate-certs [your vm name]
+      ```
+After this, ``docker-machine ls`` showed the vms up and running and without errors.
+
+
+### Initialize the swarm and add nodes
+
+The first nodes will always be the manager
+```
+docker-machine ssh myvm1 "docker swarm init --advertise-addr <myvm1 ip>:<The daemon port, usually 2377>"
+```
+The response of this command gives instructions on how to add another node/worker or node/manager
+```
+docker-machine ssh myvm2 "<content of the response that correspond to the type of node to be added>"
+```
+To leave the swarm
+```
+docker-machine ssh <relevant machine> "docker swarm leave"
+```
+
+
+### Communicating with the nodes
+
+We have used so far:
+```
+docker-machine ssh <relevant machine>
+```
+but alternatively
+```
+docker-machine env <relevant machine>
+```
+configures the current terminal to talk directly to the <relevant machine>.
+The last line of the response to this command specifies what has to be done in order for the configuration to be finalized. In my case:
+```
+@FOR /f "tokens=*" %i IN ('docker-machine env myvm1') DO @%i
+```
+
+Then ``docker-machine ls`` will indicate in which machine the terminal is directly connected. Look at the asterisk in the ACTIVE column next to the <relevant machine>.
+
+
+### Deploying the app/stack
+From a terminal configured to talk directly to the node manager (If this is not the case, use a bash command line to transfer the docker-compose.yml file to the node manager with ``docker-machine scp <file> <machine>:~``)
+```
+docker stack deploy -c docker-compose.yml getstartedlab
+```
+
+``docker stack ps getstartedlab`` will give you the deployment status of your app/stack
+
+
+### Accessing the cluster
+The [docker doc](https://docs.docker.com/get-started/part4/) states that the following should allow you to hit the app endpoints:
+```
+http://<node ip address>  -  from the browser
+curl http://<node ip address>  - from the terminal
+```
+
+
+However, it did not: ``curl http://192.168.8.104:2376 --output -`` and ``curl http://192.168.8.105:2376 --output -`` gave ``§♥☺ ☻☻`` 
+where the ip address are the ip of my virtual machines. The port 2376 is the port of the daemon running on the machine.
+Ping were going through: ``ping 192.168.8.104`` and ``ping 192.168.8.105``
+
+
+After running, 
+```
+docker service inspect getstartedlab_web
+```
+where getstartedlab_web is the service created by ``docker-compose.yml``, it was noticed that the ``"PublishMode": "ingress"`` was implemented at ``"PublishedPort": 4000,`` under the ``Endpoint.Ports`` section of the terminal response.
+
+then,
+```
+http://<node ip address>:<ingress port>  -  from the browser
+curl http://<node ip address>:<ingress port>  - from the terminal
+```
+allowed me to hit the app's endpoints.
+
+
+**Note**: For each execution of the above 2 commands, the host name is different (We are hitting different containers - horizontal scaling was successful). One can verify that the ***host names*** always belong to the ***container ids*** as given by:
+```
+docker-machine ssh myvm1 "docker container ls"
+docker-machine ssh myvm2 "docker container ls"
+```
