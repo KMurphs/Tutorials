@@ -29,6 +29,7 @@ From there on,
 
 ### ``Minikube manages a cluster on a machine***``
 
+
 Get minikube version
 ```
 $ minikube version
@@ -80,6 +81,7 @@ We will proceed to ***deploying*** a **containerized application** on top of our
 ***``Kubectl uses the Kubernetes API to interact with the cluster``***
 *``The common format of a kubectl command is:`` **``kubectl action resource``***
 
+
 A deployment is created with the **run** command. 
 A name (*kubernetes-bootcamp*) need to be assigned to the deployment
 The application image location needs to be provided (*gcr.io/google-samples/kubernetes-bootcamp:v1*). It can also be fetched form the Docker Hub
@@ -106,7 +108,8 @@ $ kubectl get deployments
 ```
 ***1*** deployment (only ***1*** item in the table) running ***1*** instance of the app (READY x/***1***) 
 
-Accessing the app
+## Accessing the app
+
 ***``A [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) is Kubernetes’resiliency wrapper for containers, allowing you to horizontally
 scale replicas.``***
 
@@ -174,6 +177,7 @@ $ curl http://localhost:8001/api/v1/namespaces/default/pods/%POD_NAME%/proxy/
 
 > Pods are the atomic unit on the Kubernetes platform. When we create a Deployment on Kubernetes, that Deployment creates Pods with containers inside them (as opposed to creating containers directly). Each Pod is tied to the Node where it is scheduled, and remains there until termination (according to restart policy) or deletion. In case of a Node failure, identical Pods are scheduled on other available nodes in the cluster
 
+
 > *Containers should only be scheduled together in a single Pod if they are tightly coupled and need to share resources such as disk.*
 
 ### Nodes
@@ -187,6 +191,7 @@ A node can have multiples pods, but a pod can only run on ***one*** node at any 
 Every Kubernetes Node runs at least:
     Kubelet, ***``a process responsible for communication between the Kubernetes Master and the Node; it manages the Pods and the containers running on a machine.``***
     A container runtime (like Docker, rkt) ***``responsible for pulling the container image from a registry, unpacking the container, and running the containerized application.``***
+
 
 
 ### Troubleshooting
