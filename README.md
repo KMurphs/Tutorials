@@ -7,6 +7,7 @@ A gentle introduction to kubernetes
 **``Kubernetes is a coordinator, orchestrator of a cluster of machines connected and configured to work as one unit.``**
 
 In order for this to work one aspect is of crucial importance:
+
 	*Applications/Services need to be containerized as this allows decoupling of the **application package** from the machine that runs it. In other words, this newly created container "containing" your application can be deployed on any machine that's available and can even be replicated since it is not tied to any machine in particular.*
 
 From there on,
@@ -27,7 +28,9 @@ From there on,
 ## Creating a cluster
 
 
-### ``Minikube manages a cluster on a machine***``
+### Minikube
+
+***``Minikube manages a cluster on a machine``***
 
 
 Get minikube version
@@ -43,7 +46,9 @@ $ minikube start --vm-driver="hyperv" --memory=2048 --cpus=4 --hyperv-virtual-sw
 > Minikube started a virtual machine for you, and a Kubernetes cluster is now running in that VM.
 
 
-### ***``Kubectl is a command line interface to interact with the cluster/kubernetes``***
+### Kubectl
+
+***``Kubectl is a command line interface to interact with the cluster/kubernetes``***
 
 Get some cluster information
 ```
@@ -53,6 +58,8 @@ $ kubectl version
 ```
 > The client version is the kubectl version; the server version is the Kubernetes version installed on the master
 
+
+Some more information
 ```
 $ kubectl cluster-info
 > Kubernetes master is running at https://172.17.7.164:8443
@@ -79,12 +86,16 @@ We will proceed to ***deploying*** a **containerized application** on top of our
 
 
 ***``Kubectl uses the Kubernetes API to interact with the cluster``***
+
 *``The common format of a kubectl command is:`` **``kubectl action resource``***
 
 
 A deployment is created with the **run** command. 
+
 A name (*kubernetes-bootcamp*) need to be assigned to the deployment
+
 The application image location needs to be provided (*gcr.io/google-samples/kubernetes-bootcamp:v1*). It can also be fetched form the Docker Hub
+
 A port on which the app is accessible is also needed (*8080*)
 ```
 $ kubectl run kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1 --port=8080
@@ -92,12 +103,9 @@ $ kubectl run kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootc
 > deployment.apps/kubernetes-bootcamp created
 ```
 > This performed a few things for you:
-
->   Searched for a suitable node where an instance of the application could be run (we have only 1 available node in minikube)
-
->   Scheduled the application to run on that Node
-
->   Configured the cluster to reschedule the instance on a new Node when needed
+> -	Searched for a suitable node where an instance of the application could be run (we have only 1 available node in minikube)
+> -	Scheduled the application to run on that Node
+> -	Configured the cluster to reschedule the instance on a new Node when needed
 
 
 Get the current deployments
@@ -110,8 +118,8 @@ $ kubectl get deployments
 
 ## Accessing the app
 
-***``A [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) is Kubernetes’resiliency wrapper for containers, allowing you to horizontally
-scale replicas.``***
+***``A Pod is Kubernetes’resiliency wrapper for containers, allowing you to horizontally
+scale replicas. (https://kubernetes.io/docs/concepts/workloads/pods/pod/)``***
 
 > Pods that are running inside Kubernetes are running on a private, isolated network. By default they are visible from other pods and services within the same kubernetes cluster, but not outside that network
 
@@ -167,10 +175,10 @@ $ curl http://localhost:8001/api/v1/namespaces/default/pods/%POD_NAME%/proxy/
 
 ### Pods
 
-***``A Pod is a Kubernetes abstraction that represents a group of one or more application containers (such as Docker or rkt), and some shared resources for those containers. Those resources include:
-    Shared storage, as Volumes
-    Networking, as a unique cluster IP address
-    Information about how to run each container, such as the container image version or specific ports to use``***
+***``A Pod is a Kubernetes abstraction that represents a group of one or more application containers (such as Docker or rkt), and some shared resources for those containers. Those resources include:``
+``- Shared storage, as Volumes``
+``- Networking, as a unique cluster IP address``
+``- Information about how to run each container, such as the container image version or specific ports to use``***
 
 
 ***``The containers in a Pod share an IP Address and port space, are always co-located and co-scheduled, and run in a shared context on the same Node``***
@@ -189,8 +197,8 @@ A node can have multiples pods, but a pod can only run on ***one*** node at any 
 
 
 Every Kubernetes Node runs at least:
-    Kubelet, ***``a process responsible for communication between the Kubernetes Master and the Node; it manages the Pods and the containers running on a machine.``***
-    A container runtime (like Docker, rkt) ***``responsible for pulling the container image from a registry, unpacking the container, and running the containerized application.``***
+-	Kubelet, ***``a process responsible for communication between the Kubernetes Master and the Node; it manages the Pods and the containers running on a machine.``***
+-	A container runtime (like Docker, rkt) ***``responsible for pulling the container image from a registry, unpacking the container, and running the containerized application.``***
 
 
 
@@ -205,6 +213,27 @@ The most common operations can be done with the following kubectl commands:
 ```
 
 
+> The describe command can be used to get detailed information about most of the kubernetes primitives: node, pods, deployments. 
+
+> The describe output is designed to be human readable, not to be scripted against.
+
+
+```
+kubectl describe pods
+kubectl logs %POD_NAME%
+kubectl exec %POD_NAME% env
+kubectl exec -ti %POD_NAME% bash
+kubectl exec -ti %POD_NAME% sh
+```
+From inside the pods we can do:
+```
+cat server.js
+ls
+curl localhost:8080
+...
+```
+
+
 
 
 
@@ -214,7 +243,6 @@ The most common operations can be done with the following kubectl commands:
 ## Windows "chocolatey" - (sort of npm for windows)
 ```
 Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString(‘https://chocolatey.org/install.ps1'))
-
 choco upgrade chocolatey
 ```
 
@@ -224,7 +252,9 @@ See official Installation [here](https://hub.docker.com/editions/community/docke
 ## Minikube, kubectl and Helm
 
 ***Minikube manages a cluster on a machine***
+
 ***Kubectl interacts with the cluster***
+
 ***Helm is package manager for Kubernetes. It allows you to deploy Helm Charts (or packages) onto a K8s cluster with all the resources and dependencies
 needed for the application.***
 ```
@@ -243,7 +273,7 @@ choco install kubernetes-helm
 6.	CD to the minikube.exe's folder.
 7.	minikube start --vm-driver="hyperv" --memory=4096 --cpus=4 --hyperv-virtual-switch="minikube-eth" --v=7 --alsologtostderr -p "minikube-vm"
 
-### Useful commands
+#### Useful commands
 ```
 minikube --help
 minikube version
@@ -289,7 +319,7 @@ https://stackoverflow.com/questions/55417410/kubernetes-create-deployment-unexpe
 2.	Get path of "kubectlexe installed via choco
 3.	Add to PATH so that it is found instead of the kubectl that ships with the docker installation
 
-### Useful commands
+#### Useful commands
 ```
 kubectl --help
 kubectl version
