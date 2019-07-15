@@ -76,6 +76,13 @@ $ kubectl get nodes
 
 ## Deploying an App
 
+
+A deployment is a configuration object stored on the master. 
+
+The master realises the deployment (specifications) and strives to keep the deployment specifications valid (selfhealing, ...) 
+
+### Deployement
+
 We will proceed to ***deploying*** a **containerized application** on top of our running cluster/kunernetes
 
 > The Deployment instructs Kubernetes how to create and update instances of your application
@@ -217,7 +224,7 @@ The most common operations can be done with the following kubectl commands:
 
 > The describe output is designed to be human readable, not to be scripted against.
 
-
+Some commands examples
 ```
 kubectl describe pods
 kubectl logs %POD_NAME%
@@ -225,6 +232,7 @@ kubectl exec %POD_NAME% env
 kubectl exec -ti %POD_NAME% bash
 kubectl exec -ti %POD_NAME% sh
 ```
+
 From inside the pods we can do:
 ```
 cat server.js
@@ -234,7 +242,158 @@ curl localhost:8080
 ```
 
 
+# Using a Service to Expose Your App
 
+> A Service in Kubernetes is an abstraction which defines a ***logical set of Pods*** and a ***policy by which to access them***
+
+A service is a concept similar the docker services. They can extend over many nodes, and provide the pods that it controls a single ip and port so that effectively a user connecting to the system will actually connect to the service which will redirect the connection to an available pod on a node of its choice (Load balancing)
+
+> A Service is defined using YAML (preferred) or JSON, like all Kubernetes objects. The set of Pods targeted by a Service is usually determined by a LabelSelector.
+
+> Although each Pod has a unique IP address, those IPs are not exposed outside the cluster without a Service. Services allow your applications to receive traffic. Services can be exposed in different ways by specifying a type in the ServiceSpec:
+
+>	-    ClusterIP (default) - Exposes the Service on an internal IP in the cluster. This type makes the Service only reachable from within the cluster.
+
+>	-    NodePort - Exposes the Service on the same port of each selected Node in the cluster using NAT. Makes a Service accessible from outside the cluster using <NodeIP>:<NodePort>. Superset of ClusterIP.
+
+>	-    LoadBalancer - Creates an external load balancer in the current cloud (if supported) and assigns a fixed, external IP to the Service. Superset of NodePort.
+
+>	-    ExternalName - Exposes the Service using an arbitrary name (specified by externalName in the spec) by returning a CNAME record with the name. No proxy is used. This type requires v1.7 or higher of kube-dns.
+
+
+## Setting up the Service
+> A Service routes traffic across a set of Pods. Services are the abstraction that allow pods to die and replicate in Kubernetes without impacting your application. Discovery and routing among dependent Pods (such as the frontend and backend components in an application) is handled by Kubernetes Services
+
+> Services match a set of Pods using labels and selectors. Labels are key/value pairs attached to objects
+
+
+let's list current services
+```
+$ kubectl get services
+> NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+> kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   3h58m
+```
+Note that the current service is of type ClusterIP which by default does not expose the cluster to the outside world.
+
+Some information about the current service
+```
+kubectl describe services/kubernetes
+```
+Note the port (443) and the target port (8443). The node port is used from the outside world eg ``curl <minikube ip>:<target port>`` and it isn't here.
+
+When this command is run
+```
+$ minikube ip -p minikube-vm
+> 172.17.7.164
+
+$ curl 172.17.7.164:8443
+> Client sent an HTTP request to an HTTPS server.
+```
+
+Now, let create a new service with ``kubectl expose``
+```
+$ kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+> service/kubernetes-bootcamp exposed
+```
+
+
+And now, 
+```
+$ kubectl get services
+> NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+> kubernetes            ClusterIP   10.96.0.1        <none>        443/TCP          4h2m
+> kubernetes-bootcamp   NodePort    10.106.205.172   <none>        8080:32454/TCP   7s
+```
+and, 
+```
+kubectl describe services/kubernetes-bootcamp
+```
+The NodePort is set to 32454. Therefore, we get 
+```
+$ minikube ip -p minikube-vm
+> 172.17.7.164
+
+$ curl 172.17.7.164:32454
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-bzd7d | v=1
+```
+The service has been exposed
+
+## Investigating labels
+
+The Deployment created automatically a label for our Pod
+```
+kubectl describe deployment
+```
+Under the response we can see,
+```
+Labels:                 run=kubernetes-bootcamp
+```
+We can use this lable to query our list of pods,
+```
+$ kubectl get pods -l run=kubernetes-bootcamp
+> NAME                                   READY   STATUS    RESTARTS   AGE
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running   0          120m
+```
+Or use it to get the service that owns this pod
+```
+$ kubectl get services -l run=kubernetes-bootcamp
+> NAME                  TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+> kubernetes-bootcamp   NodePort   10.106.205.172   <none>        8080:32454/TCP   14m
+``` 
+
+
+We can add an arbitrary label to a pod
+```
+$ kubectl label pod %POD_NAME% app=v1_IAmAwesome
+> pod/kubernetes-bootcamp-5b48cfdcbd-bzd7d labeled
+``` 
+then,
+```
+$ kubectl describe pods %POD_NAME%
+> Labels:         app=v1_IAmAwesome
+                  pod-template-hash=5b48cfdcbd
+                  run=kubernetes-bootcamp
+```
+and query the pods with that label
+```
+$ kubectl get pods -l app=v1_IAmAwesome
+NAME                                   READY   STATUS    RESTARTS   AGE
+kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running   0          126m
+```
+
+## Deleting the service
+
+
+```
+kubectl describe deployment
+```
+The service is configured with the label ``run=kubernetes-bootcamp``
+
+The service can be deleted with
+```
+$ kubectl delete service -l run=kubernetes-bootcamp
+> service "kubernetes-bootcamp" deleted
+```
+
+The deletion can be confirmed with
+```
+$ kubectl get services
+> NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+> kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   4h25m
+```
+
+And now
+```
+$ curl 172.17.7.164:32454
+> curl: (7) Failed to connect to 172.17.7.164 port 32454: Connection refused
+```
+
+But,
+```
+$ kubectl exec -ti %POD_NAME% curl localhost:8080
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-bzd7d | v=1
+```
+proves that the app is still running
 
 
 
