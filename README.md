@@ -532,16 +532,163 @@ $ kubectl get pods -o wide
 ```
 
 
+# Rolling Updates
+
+> Rolling updates allow Deployments' update to take place with zero downtime by incrementally updating Pods instances with new ones. The new Pods will be scheduled on Nodes with available resources.
 
 
+> In the previous module we scaled our application to run multiple instances. This is a requirement for performing updates without affecting application availability. By default, the maximum number of Pods that can be unavailable during the update and the maximum number of new Pods that can be created, is one. Both options can be configured to either numbers or percentages (of Pods). In Kubernetes, updates are versioned and any Deployment update can be reverted to previous (stable) version.
 
 
+> Rolling updates allow the following actions:
+> - Promote an application from one environment to another (via container image updates)
+> - Rollback to previous versions
+> - Continuous Integration and Continuous Delivery of applications with zero downtime
+
+## Updating
+
+After setting back the number of replicas to 4,
+```
+$ kubectl get pods -o wide
+> NAME                                   READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+> kubernetes-bootcamp-5b48cfdcbd-7tsfb   1/1     Running   0          8s     172.18.0.8   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-9znl5   1/1     Running   0          33m    172.18.0.6   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running   0          171m   172.18.0.5   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-lw5tj   1/1     Running   0          8s     172.18.0.7   minikube   <none>           <none>
+```
+
+And, under the image entry of the response we can look at the current image 
+```
+$ kubectl describe pods
+>    Image:          gcr.io/google-samples/kubernetes-bootcamp:v1
+```
+
+now, 
+```
+$ kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2
+> deployment.extensions/kubernetes-bootcamp image updated
+```
+
+And finally,
+```
+$ kubectl get pods
+> NAME                                   READY   STATUS              RESTARTS   AGE
+> kubernetes-bootcamp-5b48cfdcbd-7tsfb   1/1     Running             0          90s
+> kubernetes-bootcamp-5b48cfdcbd-9znl5   1/1     Running             0          34m
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running             0          172m
+> kubernetes-bootcamp-5b48cfdcbd-lw5tj   1/1     Terminating         0          90s
+> kubernetes-bootcamp-cfc74666-55ptn     0/1     ContainerCreating   0          6s
+> kubernetes-bootcamp-cfc74666-6dslh     0/1     ContainerCreating   0          6s
+```
+which eventually settles to
+```
+$ kubectl get pods
+> NAME                                 READY   STATUS    RESTARTS   AGE
+> kubernetes-bootcamp-cfc74666-55ptn   1/1     Running   0          54s
+> kubernetes-bootcamp-cfc74666-5924v   1/1     Running   0          45s
+> kubernetes-bootcamp-cfc74666-6dslh   1/1     Running   0          54s
+> kubernetes-bootcamp-cfc74666-jjj9m   1/1     Running   0          47s
+```
+
+## Verifying the Update
+
+let's get the NodePort where our service is exposed (30734) and the ip address of our cluster public endpoint
+```
+$ kubectl describe services/kubernetes-bootcamp
+> NodePort:                 <unset>  30734/TCP
+
+$ minikube ip -p minikube-vm
+> 172.17.7.164
+```
+and,
+```
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-jjj9m | v=2
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-6dslh | v=2
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-5924v | v=2
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-55ptn | v=2
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-5924v | v=2
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-6dslh | v=2
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-cfc74666-6dslh | v=2
+```
+All our 4 pods are in the correct state (v=2), we are hitting a different pods each time with curl. Everything looks okay
 
 
+We can also get more information by looking at the rollout (update) status since it's completed
+```
+$ kubectl rollout status deployments/kubernetes-bootcamp
+> deployment "kubernetes-bootcamp" successfully rolled out
+``` 
+Here again, the system states that the roll out was successful
+
+Finally, we can confirm which image is running on our pods with,
+```
+$ kubectl describe pods
+>    Image:          jocatalin/kubernetes-bootcamp:v2
+``` 
+
+## Rolling back
+
+In case something went wrong, the system will stop the rolling out as to not infect currently running nodes. The system will still be operational at this point and a rollout command can be issued to revert back to the previous image.
+
+Let's look at the current pods,
+```
+$ kubectl get pods
+> NAME                                 READY   STATUS    RESTARTS   AGE
+> kubernetes-bootcamp-cfc74666-55ptn   1/1     Running   0          15m
+> kubernetes-bootcamp-cfc74666-5924v   1/1     Running   0          15m
+> kubernetes-bootcamp-cfc74666-6dslh   1/1     Running   0          15m
+> kubernetes-bootcamp-cfc74666-jjj9m   1/1     Running   0          15m
+```
+
+let's try a rollout with a problematic image (which does not exists)
+```
+$ kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+> deployment.extensions/kubernetes-bootcamp image updated
+
+$ kubectl get pods
+> NAME                                   READY   STATUS              RESTARTS   AGE
+> kubernetes-bootcamp-547469f5dd-gbl5s   0/1     ContainerCreating   0          4s
+> kubernetes-bootcamp-547469f5dd-tztd7   0/1     ContainerCreating   0          4s
+> kubernetes-bootcamp-cfc74666-55ptn     1/1     Running             0          16m
+> kubernetes-bootcamp-cfc74666-5924v     1/1     Terminating         0          15m
+> kubernetes-bootcamp-cfc74666-6dslh     1/1     Running             0          16m
+> kubernetes-bootcamp-cfc74666-jjj9m     1/1     Running             0          15m
+
+$ kubectl get deployments
+> NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+> kubernetes-bootcamp   3/4     2            3           3h8m
+```
+We can clearly see the issue, one currently running pods was terminated, while 2 new were created but got stack at that point because of the invalid image.
+We have 3 available to the user, 2 that were created and loaded with "updated"/corrupted image. We need 4 running but only 3 are currently running. ``kubectl describe pods`` will confirm that 2 pods are running of the new image ``gcr.io/google-samples/kubernetes-bootcamp:v10`` while the others are still on ``jocatalin/kubernetes-bootcamp:v2``
+
+Let's undo the rollout and query the pods again
+```
+$ kubectl rollout undo deployments/kubernetes-bootcamp
+> deployment.extensions/kubernetes-bootcamp rolled back
 
 
-
-
+$ kubectl get pods
+> NAME                                 READY   STATUS    RESTARTS   AGE
+> kubernetes-bootcamp-cfc74666-54fkt   1/1     Running   0          6s
+> kubernetes-bootcamp-cfc74666-55ptn   1/1     Running   0          16m
+> kubernetes-bootcamp-cfc74666-6dslh   1/1     Running   0          16m
+> kubernetes-bootcamp-cfc74666-jjj9m   1/1     Running   0          16m
+```
+Note that 3 of these pods existed before the rollout command. Since one was terminated, a new pod was created to replace it.
+``kubectl describe pods`` will confirm that all 4 pods are running of the old valid image ``jocatalin/kubernetes-bootcamp:v2``
 
 # Installing
 
