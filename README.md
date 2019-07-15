@@ -6,16 +6,16 @@ A gentle introduction to kubernetes
 
 **``Kubernetes is a coordinator, orchestrator of a cluster of machines connected and configured to work as one unit.``**
 
-In order for this to work one aspect is of crucial importance:
+In order for this to work one aspect is of crucial importance: 
 
-	*Applications/Services need to be containerized as this allows decoupling of the **application package** from the machine that runs it. In other words, this newly created container "containing" your application can be deployed on any machine that's available and can even be replicated since it is not tied to any machine in particular.*
+*Applications/Services need to be containerized as this allows decoupling of the **application package** from the machine that runs it. In other words, this newly created container "containing" your application can be deployed on any machine that's available and can even be replicated since it is not tied to any machine in particular.*
 
 From there on,
 > Kubernetes automates the distribution and scheduling of application containers across a cluster in a more efficient way.
 
 # A Cluster
 
-*If a cluster is a group of machines working together as one unit*, then kubernetes allows the distinction of 2 different types of machine:
+*If a cluster is a group of machines working together as one unit*, then kubernetes allows the distinction between 2 different types of machine:
 1.	The master: *Coordinator of the cluster*
 	Schedules applications
 	Maintains applications desired states
@@ -79,7 +79,7 @@ $ kubectl get nodes
 
 A deployment is a configuration object stored on the master. 
 
-The master realises the deployment (specifications) and strives to keep the deployment specifications valid (selfhealing, ...) 
+The master realises the deployment (specifications) and strives to keep the deployment specifications valid (self-healing, ...) 
 
 ### Deployement
 
@@ -182,10 +182,10 @@ $ curl http://localhost:8001/api/v1/namespaces/default/pods/%POD_NAME%/proxy/
 
 ### Pods
 
-***``A Pod is a Kubernetes abstraction that represents a group of one or more application containers (such as Docker or rkt), and some shared resources for those containers. Those resources include:``
-``- Shared storage, as Volumes``
-``- Networking, as a unique cluster IP address``
-``- Information about how to run each container, such as the container image version or specific ports to use``***
+***``A Pod is a Kubernetes abstraction that represents a group of one or more application containers (such as Docker or rkt), and some shared resources for those containers. Those resources include:``***
+-	***``Shared storage, as Volumes``***
+-	***``Networking, as a unique cluster IP address``***
+-	***``Information about how to run each container, such as the container image version or specific ports to use``***
 
 
 ***``The containers in a Pod share an IP Address and port space, are always co-located and co-scheduled, and run in a shared context on the same Node``***
@@ -197,7 +197,8 @@ $ curl http://localhost:8001/api/v1/namespaces/default/pods/%POD_NAME%/proxy/
 
 ### Nodes
 
-A node is a worker machine in the kubernetes cluster. It can be either virtual or physical, and is always controlled by one master
+A node is a worker machine in the kubernetes cluster. It can be either virtual or physical, and is always controlled by one master.
+
 A node can have multiples pods, but a pod can only run on ***one*** node at any time 
 
 > Kubernetes master automatically handles scheduling the pods across the Nodes in the cluster. The Master's automatic scheduling takes into account the available resources on each Node.
@@ -279,7 +280,7 @@ Some information about the current service
 ```
 kubectl describe services/kubernetes
 ```
-Note the port (443) and the target port (8443). The node port is used from the outside world eg ``curl <minikube ip>:<target port>`` and it isn't here.
+Note the port (443) and the target port (8443). The node port is used from the outside world eg ``curl <minikube ip>:<node port>`` and it isn't here.
 
 When this command is run
 ```
@@ -328,7 +329,7 @@ Under the response we can see,
 ```
 Labels:                 run=kubernetes-bootcamp
 ```
-We can use this lable to query our list of pods,
+We can use this label to query our list of pods,
 ```
 $ kubectl get pods -l run=kubernetes-bootcamp
 > NAME                                   READY   STATUS    RESTARTS   AGE
