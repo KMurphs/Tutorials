@@ -396,6 +396,152 @@ $ kubectl exec -ti %POD_NAME% curl localhost:8080
 proves that the app is still running
 
 
+# Running multiple Instances of the app (Scaling)
+
+> Scaling out a Deployment will ensure new Pods are created and scheduled to Nodes with available resources
+
+> Running multiple instances of an application will require a way to distribute the traffic to all of them. Services have an integrated load-balancer that will distribute network traffic to all Pods of an exposed Deployment. Services will monitor continuously the running Pods using endpoints, to ensure the traffic is sent only to available Pods.
+
+> Once you have multiple instances of an Application running, you would be able to do Rolling updates without downtime.
+
+
+## Scaling
+
+
+Under the response below,
+```
+$ kubectl get deployments
+> NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+> kubernetes-bootcamp   1/1     1            1           137m
+```
+-	READY is the ratio between number of CURRENT and number of DESIRED replicas.
+	-	CURRENT is the number of replicas running now
+	-	DESIRED is the configured number of replicas
+-	The UP-TO-DATE is the number of replicas that were updated to match the desired (configured) state
+-	The AVAILABLE state shows how many replicas are actually AVAILABLE to the users
+
+
+Let's scale to 4 replicas
+```
+$ kubectl scale deployments/kubernetes-bootcamp --replicas=4
+> deployment.extensions/kubernetes-bootcamp scaled
+```
+
+And confirm the scaling,
+```
+$ kubectl get deployments
+> NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+> kubernetes-bootcamp   4/4     4            4           138m
+```
+
+Let's take a closer look at the pods
+```
+$ kubectl get pods
+> NAME                                   READY   STATUS    RESTARTS   AGE
+> kubernetes-bootcamp-5b48cfdcbd-9znl5   1/1     Running   0          18s
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running   0          138m
+> kubernetes-bootcamp-5b48cfdcbd-grstx   1/1     Running   0          18s
+> kubernetes-bootcamp-5b48cfdcbd-p69xj   1/1     Running   0          18s
+
+
+$ kubectl get pods -o wide
+> NAME                                   READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+> kubernetes-bootcamp-5b48cfdcbd-9znl5   1/1     Running   0          27s    172.18.0.6   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running   0          138m   172.18.0.5   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-grstx   1/1     Running   0          27s    172.18.0.8   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-p69xj   1/1     Running   0          27s    172.18.0.7   minikube   <none>           <none>
+```
+Note the 4 running pods with different ip addresses
+
+
+And, the replication event has been successfully logged in events in the last paragraph of the reponse below
+```
+$ kubectl describe deployments/kubernetes-bootcamp
+> Events:
+>   Type    Reason             Age   From                   Message
+>   ----    ------             ----  ----                   -------
+>   Normal  ScalingReplicaSet  53s   deployment-controller  Scaled up replica set kubernetes-bootcamp-5b48cfdcbd to 4
+```
+
+
+## Load balancing
+
+Services have an integrated and automatic load-balancer that will distribute network traffic to all Pods of an exposed Deployment. Services will monitor continuously the running Pods using endpoints, to ensure the traffic is sent only to available Pods.
+
+let's get the NodePort where our service is exposed (30734) and the ip address of our cluster public endpoint
+```
+$ kubectl describe services/kubernetes-bootcamp
+> NodePort:                 <unset>  30734/TCP
+
+$ minikube ip -p minikube-vm
+> 172.17.7.164
+```
+and,
+```
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-bzd7d | v=1
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-p69xj | v=1
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-grstx | v=1
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-bzd7d | v=1
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-grstx | v=1
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-grstx | v=1
+
+$ curl 172.17.7.164:30734
+> Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5b48cfdcbd-9znl5 | v=1
+```
+Notice how the pods that curl hits is different each time (kubernetes-bootcamp-5b48cfdcbd-***grstx***, -***p69xj***,... )
+
+
+## Scaling down
+
+```
+$ kubectl scale deployments/kubernetes-bootcamp --replicas=2
+> deployment.extensions/kubernetes-bootcamp scaled
+
+
+$ kubectl get deployments
+> NAME                  READY   UP-TO-DATE   AVAILABLE   AGE
+> kubernetes-bootcamp   2/2     2            2           157m
+
+
+$ kubectl get pods -o wide
+> NAME                                   READY   STATUS        RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+
+> kubernetes-bootcamp-5b48cfdcbd-9znl5   1/1     Running       0          19m    172.18.0.6   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running       0          157m   172.18.0.5   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-grstx   1/1     Terminating   0          19m    172.18.0.8   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-p69xj   1/1     Terminating   0          19m    172.18.0.7   minikube   <none>           <none>
+```
+and eventually,
+```
+$ kubectl get pods -o wide
+> NAME                                   READY   STATUS        RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+
+> kubernetes-bootcamp-5b48cfdcbd-9znl5   1/1     Running       0          19m    172.18.0.6   minikube   <none>           <none>
+> kubernetes-bootcamp-5b48cfdcbd-bzd7d   1/1     Running       0          157m   172.18.0.5   minikube   <none>           <none>
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Installing
 
