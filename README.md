@@ -755,6 +755,13 @@ In hyperV: Windows Home > HyperV Manager > Right Click on left pane item under H
 In Windows PowerShell: New-VMSwitch -name ExternalSwitch  -NetAdapterName "Ethernet 3"  -AllowManagementOS $true
 ```
 
+3. Stopping minikube can be tricky, use the following
+```
+$ minikube ssh
+$ sudo poweroff
+```
+
+
 #### Troubleshooting Resources
 https://medium.com/@mudrii/kubernetes-local-development-with-minikube-on-hyper-v-windows-10-75f52ad1ed42
 https://chocolatey.org/packages/kubernetes-helm
@@ -780,4 +787,5 @@ kubectl cluster-info
 
 #### Resources
 https://kubernetes.io/docs/setup/learning-environment/minikube/
+
 https://kubernetes.io/docs/tasks/
