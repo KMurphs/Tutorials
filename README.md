@@ -107,6 +107,7 @@ Set up the cluster registry by applying a .yaml manifest file.
 Wait for the registry to finish deploying using the following command. Note that this may take several minutes.
 
 `kubectl rollout status deployments/registry`
+`kubectl rollout status deployment/registry`
 
 #### Step10
 
@@ -141,13 +142,14 @@ docker stop socat-registry
 docker rm socat-registry
 
 docker run -d -e "REG_IP=192.168.8.109" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry
+docker run -d -e "REG_IP=127.0.0.1" -e "REG_PORT=30500" --name socat-registry -p 30400:5000 socat-registry
 ```
 
 #### Step15
 
 With our proxy container up and running, we can now push our hello-kenzan image to the local repository.
 
-`docker push 127.0.0.1:30400/hello-kenzan:latest`
+`docker push 127.0.0.1:30500/hello-kenzan:latest`
 
 #### Step16
 
@@ -160,6 +162,7 @@ The proxy’s work is done, so you can go ahead and stop it.
 With the image in our cluster registry, the last thing to do is apply the manifest to create and deploy the hello-kenzan pod based on the image.
 
 `kubectl apply -f applications/hello-kenzan/k8s/manual-deployment.yaml`
+`kubectl rollout status deployments/hello-kenzan`
 
 #### Step18
 
@@ -175,6 +178,19 @@ Delete the hello-kenzan deployment and service you created. We are going to keep
 
 `kubectl delete deployment hello-kenzan`
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Part 2
 
 #### Step1
@@ -182,6 +198,7 @@ Delete the hello-kenzan deployment and service you created. We are going to keep
 First, let's build the Jenkins Docker image we'll use in our Kubernetes cluster.
 
 `docker build -t 127.0.0.1:30400/jenkins:latest -f applications/jenkins/Dockerfile applications/jenkins`
+`docker build -t 127.0.0.1:30500/jenkins:latest -f applications/jenkins/Dockerfile applications/jenkins`
 
 #### Step2
 
@@ -193,13 +210,23 @@ Once again we'll need to set up the Socat Registry proxy container to push image
 
 Run the proxy container from the image.
 
-``docker stop socat-registry; docker rm socat-registry; docker run -d -e "REG_IP=`minikube ip`" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry``
+```
+$ minikube ip -p kubernetes-ci-cd-minikube-vm
+> 192.168.8.109
+
+docker stop socat-registry
+docker rm socat-registry
+
+docker run -d -e "REG_IP=192.168.8.109" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry
+docker run -d -e "REG_IP=127.0.0.1" -e "REG_PORT=30500" --name socat-registry -p 30400:5000 socat-registry
+```
 
 #### Step4
 
 With our proxy container up and running, we can now push our Jenkins image to the local repository.
 
 `docker push 127.0.0.1:30400/jenkins:latest`
+`docker push 127.0.0.1:30500/jenkins:latest`
 
 #### Step5
 
@@ -211,19 +238,32 @@ The proxy’s work is done, so you can go ahead and stop it.
 
 Deploy Jenkins, which we’ll use to create our automated CI/CD pipeline. It will take the pod a minute or two to roll out.
 
-`kubectl apply -f manifests/jenkins.yaml; kubectl rollout status deployment/jenkins`
+```
+kubectl apply -f manifests/jenkins.yaml
+kubectl rollout status deployment/jenkins
+```
 
 #### Step7
 
 Open the Jenkins UI in a web browser.
 
-`minikube service jenkins`
+`minikube service jenkins -p kubernetes-ci-cd-minikube-vm`
 
 #### Step8
 
 Display the Jenkins admin password with the following command, and right-click to copy it.
 
-``kubectl exec -it `kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}` cat /var/jenkins_home/secrets/initialAdminPassword``
+```
+$ kubectl get pods --selector=app=jenkins --output=jsonpath={.items..metadata.name}
+> jenkins-5d65969dcf-pbplt
+> jenkins-d66c4dc5-xfvfv
+
+$ kubectl exec -it jenkins-5d65969dcf-pbplt cat /var/jenkins_home/secrets/initialAdminPassword
+> 49d7cfae032e457bb08561434adaff53
+
+$ kubectl exec -it jenkins-d66c4dc5-xfvfv cat /var/jenkins_home/secrets/initialAdminPassword
+> 56726858f3934dcdaaab222909a9bd06
+```
 
 #### Step9
 
@@ -271,13 +311,32 @@ Push a change to your fork. Run the job again. View the changes.
 
 `minikube service hello-kenzan`
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Part 3
 
 ### Step1
 
 Initialize Helm. This will install Tiller (Helm's server) into our Kubernetes cluster.
 
-`helm init --wait --debug; kubectl rollout status deploy/tiller-deploy -n kube-system`
+```
+helm init --wait --debug
+kubectl rollout status deploy/tiller-deploy -n kube-system
+```
 
 #### Step2
 
@@ -412,6 +471,21 @@ Check to see that all the pods are running.
 Start the web application in your default browser. You may have to refresh your browser so that the puzzle appears properly.
 
 `minikube service kr8sswordz`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Part 4
 
