@@ -43,24 +43,26 @@ To generate this readme: `node readme.js`
 
 Start up the Kubernetes cluster with Minikube, giving it some extra resources.
 
-`minikube start --memory 8000 --cpus 2 --kubernetes-version v1.11.0`
+`minikube start --vm-driver="hyperv" --memory=2048 --cpus=2 --hyperv-virtual-switch="minikube-wir" --v=7 --alsologtostderr -p kubernetes-ci-cd-minikube-vm`
 
 #### Step2
 
 Enable the Minikube add-ons Heapster and Ingress.
 
-`minikube addons enable heapster; minikube addons enable ingress`
+`minikube addons enable heapster -p kubernetes-ci-cd-minikube-vm`
+`minikube addons enable ingress -p kubernetes-ci-cd-minikube-vm`
 
 #### Step3
 
 View the Minikube Dashboard, a web UI for managing deployments.
 
-`minikube service kubernetes-dashboard --namespace kube-system`
+`minikube dashboard -p kubernetes-ci-cd-minikube-vm`
 
 #### Step4
 
 Deploy the public nginx image from DockerHub into a pod. Nginx is an open source web server that will automatically download from Docker Hub if it’s not available locally.
 
+`kubectl get pods --all-namespaces`
 `kubectl run nginx --image nginx --port 80`
 
 #### Step5
@@ -73,7 +75,18 @@ Create a K8s Service for the deployment. This will expose the nginx pod so you c
 
 Launch a web browser to test the service. The nginx welcome page displays, which means the service is up and running.
 
-`minikube service nginx`
+`minikube service nginx -p kubernetes-ci-cd-minikube-vm`
+or
+```
+$ minikube ip -p kubernetes-ci-cd-minikube-vm
+> 192.168.8.109
+
+$ kubectl describe services/nginx
+> NodePort:                 <unset>  30695/TCP
+
+and visit in your browser 192.168.8.109:30695
+```
+
 
 #### Step7
 
@@ -99,7 +112,7 @@ Wait for the registry to finish deploying using the following command. Note that
 
 View the registry user interface in a web browser.
 
-`minikube service registry-ui`
+`minikube service registry-ui -p kubernetes-ci-cd-minikube-vm`
 
 #### Step11
 
@@ -120,8 +133,15 @@ We’ve built the image, but before we can push it to the registry, we need to s
 #### Step14
 
 Now run the proxy container from the newly created image. (Note that you may see some errors; this is normal as the commands are first making sure there are no previous instances running.)
+```
+$ minikube ip -p kubernetes-ci-cd-minikube-vm
+> 192.168.8.109
 
-``docker stop socat-registry; docker rm socat-registry; docker run -d -e "REG_IP=`minikube ip`" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry``
+docker stop socat-registry
+docker rm socat-registry
+
+docker run -d -e "REG_IP=192.168.8.109" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry
+```
 
 #### Step15
 
@@ -145,7 +165,7 @@ With the image in our cluster registry, the last thing to do is apply the manife
 
 Launch a web browser and view the service.
 
-`minikube service hello-kenzan`
+`minikube service hello-kenzan -p kubernetes-ci-cd-minikube-vm`
 
 #### Step19
 
