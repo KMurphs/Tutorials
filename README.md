@@ -37,6 +37,26 @@ To generate this readme: `node readme.js`
 
 ## Tutorial Steps
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Part 1
 
 #### Step1
@@ -336,6 +356,10 @@ Initialize Helm. This will install Tiller (Helm's server) into our Kubernetes cl
 ```
 helm init --wait --debug
 kubectl rollout status deploy/tiller-deploy -n kube-system
+
+# helm del --purge etcd-operator
+# helm init --wait --debug --force-upgrade
+# helm ls --all etcd-operator
 ```
 
 #### Step2
@@ -362,6 +386,7 @@ The crossword application is a multi-tier application whose services depend on e
 Now we're going to walk through an initial build of the monitor-scale application.
 
 ``docker build -t 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD` -f applications/monitor-scale/Dockerfile applications/monitor-scale``
+``docker build -t 127.0.0.1:30500/monitor-scale -f applications/monitor-scale/Dockerfile applications/monitor-scale``
 
 #### Step6
 
@@ -373,13 +398,20 @@ Once again we'll need to set up the Socat Registry proxy container to push the m
 
 Run the proxy container from the newly created image.
 
-``docker stop socat-registry; docker rm socat-registry; docker run -d -e "REG_IP=`minikube ip`" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry``
+```
+docker stop socat-registry
+docker rm socat-registry
+
+docker run -d -e "REG_IP=`minikube ip`" -e "REG_PORT=30400" --name socat-registry -p 30400:5000 socat-registry
+docker run -d -e "REG_IP=127.0.0.1" -e "REG_PORT=30500" --name socat-registry -p 30400:5000 socat-registry
+```
 
 #### Step8
 
 Push the monitor-scale image to the registry.
 
 ``docker push 127.0.0.1:30400/monitor-scale:`git rev-parse --short HEAD` ``
+``docker push 127.0.0.1:30500/monitor-scale ``
 
 #### Step9
 
@@ -403,7 +435,11 @@ Monitor-scale has the functionality to let us scale our puzzle app up and down t
 
 Create the monitor-scale deployment and the Ingress defining the hostname by which this service will be accessible to the other services.
 
-``sed 's#127.0.0.1:30400/monitor-scale:$BUILD_TAG#127.0.0.1:30400/monitor-scale:'`git rev-parse --short HEAD`'#' applications/monitor-scale/k8s/deployment.yaml | kubectl apply -f -``
+```
+sed 's#127.0.0.1:30400/monitor-scale:$BUILD_TAG#127.0.0.1:30400/monitor-scale:'`git rev-parse --short HEAD`'#' applications/monitor-scale/k8s/deployment.yaml | kubectl apply -f -
+
+kubectl apply -f applications/monitor-scale/k8s/deployment.yaml
+```
 
 #### Step13
 
@@ -440,6 +476,7 @@ View deployments to see the monitor-scale deployment.
 We will run a script to bootstrap the puzzle and mongo services, creating Docker images and storing them in the local registry. The puzzle.sh script runs through the same build, proxy, push, and deploy steps we just ran through manually for both services.
 
 `scripts/puzzle.sh`
+` scripts/puzzle.sh`
 
 #### Step19
 
@@ -544,6 +581,22 @@ After it triggers, observe how the puzzle services disappear in the Kr8sswordz P
 #### Step13
 
 Try clicking Submit to test that hits now register as white.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Automated Scripts to Run Tutorial
