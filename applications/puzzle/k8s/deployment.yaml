@@ -14,16 +14,16 @@ spec:
         tier: puzzle
     spec:
       containers:
-      - image: 127.0.0.1:30400/puzzle:$BUILD_TAG
+      - image: 127.0.0.1:30500/puzzle:$BUILD_TAG
         name: puzzle
         imagePullPolicy: Always
         lifecycle:
           postStart:
             exec:
-              command: ["/up.sh"]
+              command: ["./up.sh"]
           preStop:
             exec:
-              command: ["/down.sh"]
+              command: ["./down.sh"]
         ports:
         - containerPort: 3000
           name: puzzle
