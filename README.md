@@ -476,7 +476,7 @@ View deployments to see the monitor-scale deployment.
 We will run a script to bootstrap the puzzle and mongo services, creating Docker images and storing them in the local registry. The puzzle.sh script runs through the same build, proxy, push, and deploy steps we just ran through manually for both services.
 
 `scripts/puzzle.sh`
-` scripts/puzzle.sh`
+`scripts\puzzle.sh`
 
 #### Step19
 
@@ -490,6 +490,7 @@ Check to see if the puzzle and mongo services have been deployed.
 Bootstrap the kr8sswordz frontend web application. This script follows the same build proxy, push, and deploy steps that the other services followed.
 
 `scripts/kr8sswordz-pages.sh`
+`scripts\kr8sswordz-pages.sh`
 
 #### Step21
 
