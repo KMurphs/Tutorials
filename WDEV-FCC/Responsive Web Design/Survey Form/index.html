@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FCC Survey Form</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+     <div id="container">
+        <header>
+          <h1 id="title">Survey Form</h1>
+       </header>
+       <main>
+          <section>
+            <p  id="description">Let us know how we can improve freeCodeCamp</p>
+         </section>
+         <section>
+           <form action="" id="survey-form">
+             
+             <label for="name" id="name-label">*Name</label>
+             <input type="text" id="name" placeholder="Your Name" required>
+             
+             <label for="email" id="email-label">*Email</label>
+             <input type="email" id="email" placeholder="youremail@example.com" required>
+             
+             <label for="number" id="number-label">Number</label>
+             <input type="number" id="number" min="5" max ="15"  placeholder="Between 5 and 15">
+             
+             <label for="dropdown" id="number-label">Dropdown</label>
+             <select name="dropdown" id="dropdown">
+               <option value="Option 1">Option 1</option>
+               <option value="Option 2">Option 2</option>
+               <option value="Option 3">Option 3</option>
+             </select>
+            
+             <label for="firstGroup">Radio Group 1</label>
+             <input type="radio" name="firstGroup" value="Element 1" checked> Element 1 </br>
+             <input type="radio" name="firstGroup" value="Element 2">  Element 2 </br>
+             <input type="radio" name="firstGroup" value="Element 3"> Element 3 </br> 
+       
+             <label for="secondGroup">Radio Group 2</label>
+             <input type="radio" name="secondGroup" value="Element 1" checked> Element 1 </br>
+             <input type="radio" name="secondGroup" value="Element 2">  Element 2 </br>
+             <input type="radio" name="secondGroup" value="Element 3"> Element 3 </br> 
+
+             <label for="thirdGroup">Checkbox Group</label>
+             <input type="checkbox" name="thirdGroup" value="Option 1"> Option 1 </br>
+             <input type="checkbox" name="thirdGroup" value="Option 2"> Option 2 </br>
+             <input type="checkbox" name="thirdGroup" value="Option 3"> Option 3 </br>
+
+            <label for="textarea">Additional Comments</label>
+            <textarea name="textarea" id="textarea" cols="30" rows="10" placeholder="Additional comments..."></textarea>
+</br>
+            <input type="submit" id="submit">
+
+       
+           </form>
+         </section>
+       </main>
+    </div>
+	<script type="text/javascript" src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+  </body>
+</html>
