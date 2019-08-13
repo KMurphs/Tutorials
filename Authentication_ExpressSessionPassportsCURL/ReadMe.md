@@ -497,3 +497,21 @@ Install bcrypt on the server ``npm install bcrypt-nodejs --save``. [this tool](h
 
 Now again, ``curl http://localhost:3001/login -c cookie-file.txt -H 'Content-Type: application/json' -d '{"email":"test@test.com", "password":"password"}' -L`` should yield
 ``you hit the authentication endpoint``
+
+
+
+## using redis
+
+
+(printf "PING\r\n"; sleep 1) | ncat 127.0.0.1 6379
+(printf "KEYS * \r\n"; sleep 1) | ncat 127.0.0.1 6379
+(printf "KEYS user:* \r\n") | ncat 127.0.0.1 6379
+
+(printf "AUTH 52F6F45612444B372B117DCCDC45A\r\n PING\r\n"; sleep 1) | nc dbs_temp 6379
+
+
+curl -X GET http://localhost:3001 -c cookie-file.txt
+curl -X GET http://localhost:3001/authrequired -v -b cookie-file.txt -L 
+curl -X POST  http://localhost:3001/signup -v -b cookie-file.txt -H "Content-Type: application/json" -d '{"email":"testemail2", "password":"password"}'
+curl -X POST  http://localhost:3001/login -v -b cookie-file.txt -H "Content-Type: application/json" -d '{"email":"testemail2", "password":"password"}'
+curl -X GET http://localhost:3001/authrequired -v -b cookie-file.txt -L 
