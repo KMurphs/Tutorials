@@ -98,3 +98,134 @@ mkdir app app\templates app\static
 > app/views.py: This file contains all the routes for our application. This will tell Flask what to display on which path.
 > app/models.py: This is where the models are defined. A model is a representation of a database table in code. However, because we will not be using a database in this tutorial, we won't be needing this file.
 
+```
+echo >> run.py
+echo >> config.py
+echo >> app/__init__.py
+echo >> app/views.py
+echo >> app/templates/base.html
+echo >> app/templates/index.html
+echo >> app/templates/about.html
+```
+and 
+```
+rm server.py
+```
+
+#### config.py
+```
+# config.py
+
+# Enable Flask's debugging features. Should be False in production
+DEBUG = True
+```
+> Note that this config file is very simplified and would not be appropriate for a more complex application. For bigger applications, you may choose to have different config.py files for testing, development, and production, and put them in a config directory, making use of classes and inheritance. You may have some variables that should not be publicly shared, such as passwords and secret keys. These can be put in an instance/config.py file, which should not be pushed to version control.
+
+#### app/__init__.py
+```
+# app/__init__.py
+
+from flask import Flask
+
+# Initialize the app
+app = Flask(__name__, instance_relative_config=True)
+
+# Load the views
+from app import views
+
+# Load the config file
+app.config.from_object('config')
+```
+> Next, we have to initialize our app with all our configurations. This is done in the app/__init__.py file. Note that if we set instance_relative_config to True, we can use app.config.from_object('config') to load the config.py file.
+
+#### run.py
+```
+# run.py
+
+from app import app
+
+if __name__ == '__main__':
+    app.run()
+```
+
+
+#### views.py
+The first ``server.py`` was already an informal view file.
+```
+# views.py
+
+from flask import render_template
+
+from app import app
+
+@app.route('/')
+def index():
+    return render_template("index.html")
+
+
+@app.route('/about')
+def about():
+    return render_template("about.html")
+```
+This file references templates that do not exists yet
+
+#### base.html
+```
+<!-- base.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation"><a href="/">Home</a></li>
+            <li role="presentation"><a href="/about">About</a></li>
+            <li role="presentation"><a href="http://flask.pocoo.org" target="_blank">More About Flask</a></li>
+          </ul>
+        </nav>
+      </div>
+      {% block body %}
+      {% endblock %}
+      <footer class="footer">
+        <p>© 2016 Your Name Here</p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>
+```
+
+#### index.html
+```
+<!-- index.html-->
+
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+<div class="jumbotron">
+  <h1>Flask Is Awesome</h1>
+  <p class="lead">And I'm glad to be learning so much about it!</p>
+</div>
+{% endblock %}
+```
+
+#### Running the new app
+```
+# $ export FLASK_APP=run.py
+$ set FLASK_APP=run.py
+$ flask run
+ * Serving Flask app "server.py"
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+```
