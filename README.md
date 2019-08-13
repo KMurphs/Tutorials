@@ -51,3 +51,4 @@ A Powershell script for these steps might look like this:
 	dir –exclude old_a,old_b | %{git mv $_.Name old_b}
 	git commit -m “Move old_b files into subdir”
 ```
+
