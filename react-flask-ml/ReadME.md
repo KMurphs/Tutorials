@@ -229,3 +229,22 @@ $ flask run
  * Debug mode: off
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
+
+Note that the templates folder must be situated as in 
+```
+|-- server (the project)
+	|--	run.py
+	|--	app  
+		|-- templates	
+				|-- base.html
+				|-- index.html
+```
+
+#### Restarting Server on Change
+```
+$ export FLASK_APP=main.py
+$ export FLASK_DEBUG=1
+$ python -m flask run
+```
+
+curl -X POST http://127.0.0.1:5000/data/predict -d {\"foo\":\"bar\"}
