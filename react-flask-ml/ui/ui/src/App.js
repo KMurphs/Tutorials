@@ -1,6 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import MyTimer from './MyTimer';
+
+
 
 class App extends React.Component{
   constructor(props){
@@ -43,6 +46,7 @@ class App extends React.Component{
           Learn React
         </a>
         <section id="Time">{this.state.date.toLocaleTimeString()}</section> 
+        <MyTimer />
       </header>
       
     </div>)
