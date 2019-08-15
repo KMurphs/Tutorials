@@ -2,8 +2,9 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import MyTimer from './MyTimer';
-import IrisPrediction from './IrisPrediction';
-
+import IrisPredictionComponent from './IrisPredictionComponent';
+// import IrisPredictionResult from './IrisPredictionResult';
+// import IrisPredictionForm from './IrisPredictionForm';
 
 
 class App extends React.Component{
@@ -23,7 +24,7 @@ class App extends React.Component{
   componentDidMount() {
     this.TimerID = setInterval(
       () => this.tick(), 
-      1000
+      2000
     )
   }
 
@@ -33,7 +34,7 @@ class App extends React.Component{
 
   tick(){
     this.setState({
-      counter: this.state.counter == 2 ? 0 : this.state.counter + 1,
+      counter: this.state.counter === 2 ? 0 : this.state.counter + 1,
       date: new Date(),
       data: {
         'species': this.state.species[this.state.counter],
@@ -57,9 +58,19 @@ class App extends React.Component{
         >
           Learn React
         </a>
-        <section id="Time">{this.state.date.toLocaleTimeString()}</section> 
+        <IrisPredictionComponent />
+        {/* <div className="container">
+          <IrisPredictionForm/>
+        </div>
+        <div className="container">
+          <IrisPredictionResult results={this.state.data}/>
+        </div> */}
+        
+        {/* <IrisPredictionForm /> */}
+        {/* <InputSlider /> */}
+        {/* <section id="Time">{this.state.date.toLocaleTimeString()}</section>  */}
         <MyTimer />
-        <IrisPrediction data={this.state.data}/>
+        {/* <IrisPredictionResult results={this.state.data}/> */}
       </header>
       
     </div>)

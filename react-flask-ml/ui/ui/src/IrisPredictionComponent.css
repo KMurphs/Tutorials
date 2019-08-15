@@ -1,0 +1,14 @@
+
+.iris-prediction-component{
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.iris-prediction-component > div{
+  width: 20%;
+}
+.iris-prediction-component > div:nth-child(2){
+  width: 75%;
+}
