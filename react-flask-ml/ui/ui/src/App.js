@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import MyTimer from './MyTimer';
+import IrisPrediction from './IrisPrediction';
 
 
 
@@ -9,7 +10,13 @@ class App extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      counter: 0,
+      species: ['Iris_setosa','Iris_versicolor','Iris_virginica'],
       date: new Date(),
+      data: {
+        'species': 'Iris_versicolor',
+        'inputs': '13.2, 52.4, 26.3, 21.2',
+      },
     }
   }
 
@@ -26,7 +33,12 @@ class App extends React.Component{
 
   tick(){
     this.setState({
-      date: new Date()
+      counter: this.state.counter == 2 ? 0 : this.state.counter + 1,
+      date: new Date(),
+      data: {
+        'species': this.state.species[this.state.counter],
+        'inputs': this.state.data['inputs'],
+      },
     })
   }
 
@@ -47,6 +59,7 @@ class App extends React.Component{
         </a>
         <section id="Time">{this.state.date.toLocaleTimeString()}</section> 
         <MyTimer />
+        <IrisPrediction data={this.state.data}/>
       </header>
       
     </div>)
