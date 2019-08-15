@@ -247,4 +247,24 @@ $ export FLASK_DEBUG=1
 $ python -m flask run
 ```
 
+
+
+#### Posting to the server
+
 curl -X POST http://127.0.0.1:5000/data/predict -d {\"foo\":\"bar\"}
+curl -d @test.data -X POST http://127.0.0.1:5000/api/predict?format=csv
+in the client folder there is post man collection that can be used to submit requests to the server.
+
+
+
+
+## [The ui](https://create-react-app.dev/docs/getting-started)
+
+Setup with
+```
+npx create-react-app my-app
+cd my-app
+npm start
+```
+and ``npm run build`` when ready to deploy to production.
+
