@@ -40,15 +40,24 @@ def api_predict():
 		# print(repr(request.get_data().decode("utf-8")))
 		data = request.get_data().decode("utf-8").split('\r\n')
 		data = [item.split(',') for item in data]
+		# print(data)
 		data = np.asarray(data, dtype=np.float32)
 		pred = model.predict(data)
-
-		predictions = ["{} is predicted to represent '{}'".format(data[i,:], pred[i]) for i in range(pred.shape[0]) ]
-		predictions = '\n'.join(predictions)
+		# predictions = data.tolist();
+		# print(predictions)
+		# predictions[:,-1] = pred
+		# predictions = ["{} is predicted to represent '{}'".format(data[i,:], pred[i]) for i in range(pred.shape[0]) ]
+		predictions = [{
+			'inputs': data[i,:].tolist(),
+			'prediction': pred[i]
+		} for i in range(pred.shape[0]) ]
+		# print(predictions)
+		# predictions = '\n'.join(predictions)
 	else:
 		print("in default")
 
-	return predictions
+	return {'predictions': predictions}
+	# return predictions
 
 
 @app.route('/data/predict', methods = ['POST'])

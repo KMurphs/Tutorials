@@ -1,10 +1,11 @@
 import React from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import MyTimer from './MyTimer';
 import IrisPredictionComponent from './IrisPredictionComponent';
 // import IrisPredictionResult from './IrisPredictionResult';
 // import IrisPredictionForm from './IrisPredictionForm';
+// import InputSlider from './InputSlider';
 
 
 class App extends React.Component{
@@ -44,21 +45,17 @@ class App extends React.Component{
   }
 
   render() {
-    return (<div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <IrisPredictionComponent />
+    return (<div className="App" style={{backgroundImage: "url('./imgs/iris_background_1.jpg')"}}>
+      <main className="App-main-content" >
+        {/* <img src={logo} className="App-logo" alt="logo" /> */}
+        <MyTimer />
+        <h3>
+          Change the input controls and see live prediction of the ML Model.
+        </h3>
+        
+        <div>
+          <IrisPredictionComponent />
+        </div>
         {/* <div className="container">
           <IrisPredictionForm/>
         </div>
@@ -69,9 +66,10 @@ class App extends React.Component{
         {/* <IrisPredictionForm /> */}
         {/* <InputSlider /> */}
         {/* <section id="Time">{this.state.date.toLocaleTimeString()}</section>  */}
-        <MyTimer />
+        
         {/* <IrisPredictionResult results={this.state.data}/> */}
-      </header>
+      </main>
+      {/* <div className="overlay"></div> */}
       
     </div>)
   };

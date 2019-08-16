@@ -1,5 +1,22 @@
 .App {
   text-align: center;
+  /* background: url('imgs/iris_background_1.jpg'); */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  position: relative;
+  z-index: 0;
+}
+.App::before {
+  content: " ";
+  background-color: rgba(0,0,0,0.5);
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .App-logo {
@@ -8,24 +25,38 @@
   pointer-events: none;
 }
 
-.App-header {
-  background-color: #282c34;
+.App-main-content {
+  /* background-color: #282c34; */
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  /* display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 3fr 1fr; */
   font-size: calc(10px + 2vmin);
   color: white;
+  position: relative;
+  z-index: 2;
+}
+.App-main-content > h3{
+  width: 40%;
+  margin: 3rem auto;
+  margin-bottom: 1rem;
+  line-height: 4rem;
+}
+.App-main-content > div{
+  width: 70%;
+  margin: 0 auto;
+  margin-top: 2rem;
+}
+.iris-prediction-component > div:first-child{
+  margin: 0;
+  width: 20%;
+  padding: 1rem;
 }
 
 .App-link {
   color: #61dafb;
 }
 
-#Time{
-  margin-top: 9rem;
-}
 
 @keyframes App-logo-spin {
   from {
@@ -34,10 +65,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-
-.container{
-  width: 50%;
-  margin: 0 auto;
 }
