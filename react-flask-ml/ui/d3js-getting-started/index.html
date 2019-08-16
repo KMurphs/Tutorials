@@ -3,69 +3,51 @@
     <title>Learn D3 in 5 minutes</title>
   </head>
   <body>
-    <h3>Today is a beautiful day!!</h3>
-    <ul> </ul>
-    <svg id="test"></svg>
-    <br/>
-    <svg id="chart" width='200' height='200'></svg>
-    <br/>
-    <button id="btn">Click me and I will add some text to this document</button>
+    <div id="my_dataviz"></div>
 
     <script src='https://d3js.org/d3.v4.min.js'></script>
     <script>    
-      d3.select('h3').style('color', 'darkblue');    
-      d3.select('h3').style('font-size', '24px');
-    </script>
-    <script>    
-      var fruits = ['apple', 'mango', 'banana', 'orange'];    
-      d3.select('ul')        
-        .selectAll('li')        
-        .data(fruits)        
-        .enter()        
-        .append('li')        
-        .text(function(d) { 
-          return d; 
-        });
-    </script>
-    <script>      
-      d3.select('#test')
-        .append('rect')       
-        .attr('x', 50)     
-        .attr('y', 50)   
-        .attr('width', 200)   
-        .attr('height', 100)   
-        .attr('fill', 'green');    
+      const margins = {
+        top: 10,
+        right: 30,
+        bottom: 30,
+        left: 60
+      };
+      const width = 460 - margins.left - margins.right;
+      const height = 460 - margins.top - margins.bottom;
+
+      //Creating a svg html element of 460x460 and a child element that start at 
+      //the origin point that has x and y offset from the left and the top
+      //and set svg to equal that. svg is now this sub element
+      //Note every successive append calls, append an element to the previous one or the root element
+      let svg = d3.select('#my_dataviz')
+                    .append('svg')
+                      .attr('width', width + margins.left + margins.right)
+                      .attr('height', height + margins.top + margins.bottom)
+                    .append('g')
+                      .attr('transform', `translate(${margins.left},${margins.top})`)
+      //Read the data
+      d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/2_TwoNum.csv", data => {
+        console.log(data)
+
+        const xScale = d3.scaleLinear().domain([0, 4000]).range([0, width]);
+        const yScale = d3.scaleLinear().domain([0, 500000]).range([height, 0]);
+
+        //Create a point at coord(0,height) and CALL AXISBOTTOM of xScale
+        svg.append('g').attr('transform', `translate(0, ${height})`).call(d3.axisBottom(xScale))
+        svg.append('g').call(d3.axisLeft(yScale))
+
+        svg.append('g').selectAll('dot')
+                       .data(data)
+                       .enter()
+                       .append('circle')
+                         .attr('cx', d => xScale(d.GrLivArea))
+                         .attr('cy', d => yScale(d.SalePrice))
+                         .attr('r', 1.5)
+                         .style('fill', '#69b3a2')
+      })
 
     </script>
-    <script>     
-      var data = [80, 120, 60, 150, 200]; 
-      var barHeight = 20;
-      var barChart = d3.select('#chart')          
-                       .selectAll('rect')          
-                       .data(data)          
-                       .enter() 
-                       .append('rect')          
-                       .attr('width', function(d) {  
-                         return d; 
-                         })          
-                       .attr('height', barHeight - 1)          
-                       .attr('transform', function(d, i) {            
-                         return "translate(0," + i * barHeight + ")";         
-                         });
 
-  
-
-    </script>
-    <script>     
-      d3.select('#btn')   
-        .on('click', function(){
-          d3.select('body')
-            .append('h3')
-            .text('Today is a beautiful day!!')
-        })          
-
-  
-
-    </script>
   </body>
 </html>
