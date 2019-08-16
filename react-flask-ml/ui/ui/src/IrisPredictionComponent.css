@@ -1,14 +1,20 @@
 
 .iris-prediction-component{
-  width: 90%;
-  margin: 0 auto;
+  width: 100%;
+  /* margin: 0 auto; */
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: stretch;
 }
 .iris-prediction-component > div{
-  width: 20%;
+  /* width: 20%; */
+  margin: 0 auto;
+  width: 100%;
 }
 .iris-prediction-component > div:nth-child(2){
-  width: 75%;
+  /* width: 75%; */
+}
+.iris-prediction-component > div > p{
+  margin: 1rem;  
 }

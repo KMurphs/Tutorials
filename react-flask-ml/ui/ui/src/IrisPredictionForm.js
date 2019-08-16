@@ -35,10 +35,10 @@ class IrisPredictionForm extends React.Component{
   render() {
     return (
     <section className="iris-prediction-form">
-      <InputSlider onChange={ (value) => this.handleChange(0, value) } label="Petal Width"/>
-      <InputSlider onChange={ (value) => this.handleChange(1, value) } label="Petal Height"/>
-      <InputSlider onChange={ (value) => this.handleChange(2, value) } label="Sepal Width"/>
-      <InputSlider onChange={ (value) => this.handleChange(3, value) } label="Sepal Height"/>
+      <InputSlider onChange={ (value) => this.handleChange(0, value) } min="4.0" max="8.0" label="Sepal Length"/>
+      <InputSlider onChange={ (value) => this.handleChange(1, value) } min="1.5" max="5.0" label="Sepal Width"/>
+      <InputSlider onChange={ (value) => this.handleChange(2, value) } min="0.5" max="7.5" label="Petal Length"/>
+      <InputSlider onChange={ (value) => this.handleChange(3, value) } min="0.0" max="3.0" label="Petal Width"/>
     </section>
     )
   }

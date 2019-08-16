@@ -3,6 +3,7 @@ import './IrisPredictionResult.css';
 
 
 class IrisPredictionResult extends React.Component{
+  
   render() {
     return (
     <section className="iris-prediction">
