@@ -1,281 +1,359 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
+<html>
+<head>
+	<meta charset="utf-8">
+	<style>
+		svg {
+		  font: 10px sans-serif;
+		  padding: 10px;
+		}
 
-svg {
-  font: 10px sans-serif;
-  padding: 10px;
-}
+		.axis,
+		.frame {
+		  shape-rendering: crispEdges;
+		}
 
-.axis,
-.frame {
-  shape-rendering: crispEdges;
-}
+		.axis line {
+		  stroke: #ddd;
+		}
 
-.axis line {
-  stroke: #ddd;
-}
+		.axis path {
+		  display: none;
+		}
 
-.axis path {
-  display: none;
-}
+		.cell text {
+		  font-weight: bold;
+		  text-transform: capitalize;
+		  fill: black;
+		}
 
-.cell text {
-  font-weight: bold;
-  text-transform: capitalize;
-  fill: black;
-}
+		.frame {
+		  fill: none;
+		  stroke: #aaa;
+		}
 
-.frame {
-  fill: none;
-  stroke: #aaa;
-}
+		circle {
+		  fill-opacity: .7;
+		  transition: all .6s;
+		}
 
-circle {
-  fill-opacity: .7;
-  transition: all .6s;
-}
+		circle.hidden {
+		  fill: #ccc !important;
+		  transition: all .6s;
+		}
 
-circle.hidden {
-  fill: #ccc !important;
-  transition: all .6s;
-}
-
-.extent {
-  fill: #000;
-  fill-opacity: .125;
-  stroke: #fff;
-}
-
-</style>
+		.extent {
+		  fill: #000;
+		  fill-opacity: .125;
+		  stroke: #fff;
+		}
+	</style>
+</head>
 <body>
-<script src='http://d3js.org/d3.v4.min.js'></script>
-<script>
 
-//size for subframe
-var width = 960,
-    size = 230,
-    padding = 20;
+	<script src='http://d3js.org/d3.v4.js'></script>
+	<script>
+	// https://www.d3indepth.com/enterexit/
+		//size for subframe
+		var width, size, padding, x, y, xAxis, yAxis, color, wasSetup, domainByTrait, svg, cells, traits, n, data, thisThis;
 
-//scales for subframes
-var x = d3.scaleLinear()
-    .range([padding / 2, size - padding / 2]);
+		const init = function(){
+			//size for subframe
+			width = 960;
+			size = 230;
+			padding = 20;
+			wasSetup = false;
 
-var y = d3.scaleLinear()
-    .range([size - padding / 2, padding / 2]);
+			//scales for subframes
+			x = d3.scaleLinear().range([padding / 2, size - padding / 2]);
+			y = d3.scaleLinear().range([size - padding / 2, padding / 2]);
 
-//Axis for subframes
-var xAxis = d3.axisBottom()
-    .scale(x)
-    .ticks(6);
+			//Axis for subframes
+			xAxis = d3.axisBottom().scale(x).ticks(6);
+			yAxis = d3.axisLeft().scale(y).ticks(6);
 
-var yAxis = d3.axisLeft()
-    .scale(y)
-    .ticks(6);
+			//color scale/scheme
+			color = d3.scaleOrdinal(d3.schemeCategory10);
+		}()
 
-//color scale/scheme
-var color = d3.scaleOrdinal(d3.schemeCategory10);
+		const ploltScatterPlotMatrix = function(someData){
+			data = someData;
+			if(wasSetup){
+				updateScatterPlotMatrix();
+			} else {
+				wasSetup = true;
+				setupAndPloltScatterPlotMatrix();
+			}
+		}
+		
+		//Read csv file
+		const setupAndPloltScatterPlotMatrix = function() {
+			console.log(data)
 
+		  
+			domainByTrait = {} //Empty object
+			traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; }) //get columns names except for species
+			n = traits.length; //get nber of cols
 
-//Read csv file
-d3.csv("./flowers.csv", function(error, data) {
-  if (error) throw error;
-  console.log(data)
+			//Iterate through each col names and get min, max (extent)
+			traits.forEach(function(trait) {
+				//d3 extent get the range of saome data given the data array of object and a function that iterates through the data
+				//to extract the value of one col
+				domainByTrait[trait] = d3.extent(data, function(d) { /*console.log(d);*/ return d[trait]; });
+			});
+			console.log(domainByTrait)
+			console.log(traits)
 
-  
-  var domainByTrait = {}, //Empty object
-      traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; }), //get columns names except for species
-      n = traits.length; //get nber of cols
-
-  //Iterate through each col names and get min, max (extent)
-  traits.forEach(function(trait) {
-    //d3 extent get the range of saome data given the data array of object and a function that iterates through the data
-    //to extract the value of one col
-    domainByTrait[trait] = d3.extent(data, function(d) { /*console.log(d);*/ return d[trait]; });
-  });
-  console.log(domainByTrait)
-  console.log(traits)
-
-  //create huge underlying grid that will span the whole parent frame (all subframes)
-  xAxis.tickSize(size * n);
-  yAxis.tickSize(-size * n);
-
-
-  //create svg container and an orgin point from which to start drawing the remaining
-  var svg = d3.select("body").append("svg")
-                                .attr("width", size * n + padding)
-                                .attr("height", size * n + padding)
-                             .append("g")
-                                .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
-
+				//create huge underlying grid that will span the whole parent frame (all subframes)
+			xAxis.tickSize(size * n);
+			yAxis.tickSize(-size * n);
 
 
-
-  //create a selection a virtual element of classes x axis (.x .axis)
-  svg.selectAll(".x.axis")
-      //join with columns names (sepal width,...)
-      .data(traits)
-      //map 
-      .enter()
-        //create an element for each cols (we are creating 4 x axis sitting at the bottom)
-        .append("g")
-          // giving these axis the css classes 
-          .attr("class", "x axis")
-          // positioning the element ot top left corner
-          .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
-        //doing one more thing for each new axis (for now we only have the origins at the top left)
-        .each(function(d) { 
-          //binding the domain to the incomplete scale (the x scale was bound to a range but not a domain yet)
-          x.domain(domainByTrait[d]); 
-          //xAxis was already contructed as an axis, we actually putting it here
-          d3.select(this).call(xAxis); 
-        });
-
-  svg.selectAll(".y.axis")
-      .data(traits)
-    .enter().append("g")
-      .attr("class", "y axis")
-      .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
-      .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
+			//create svg container and an orgin point from which to start drawing the remaining
+			svg = d3.select("body").append("svg")
+											.attr("width", size * n + padding)
+											.attr("height", size * n + padding)
+										 .append("g")
+											.attr("transform", "translate(" + padding + "," + padding / 2 + ")");
 
 
 
 
+			//create a selection a virtual element of classes x axis (.x .axis)
+			svg.selectAll(".x.axis")
+				  //join with columns names (sepal width,...)
+				  .data(traits)
+				  //map 
+				  .enter()
+					//create an element for each cols (we are creating 4 x axis sitting at the bottom)
+					.append("g")
+					  // giving these axis the css classes 
+					  .attr("class", "x axis")
+					  // positioning the element ot top left corner
+					  .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
+					//doing one more thing for each new axis (for now we only have the origins at the top left)
+					.each(function(d) { 
+					  //binding the domain to the incomplete scale (the x scale was bound to a range but not a domain yet)
+					  x.domain(domainByTrait[d]); 
+					  //xAxis was already contructed as an axis, we actually putting it here
+					  d3.select(this).call(xAxis); 
+					});
 
-  var cell = svg.selectAll(".cell")
-                .data(cross(traits, traits))  //16 cells not yet drawn with their x and y names and starting positions
-                .enter()
-                //start drawing cells
-                .append("g")
-                  .attr("class", "cell")
-                  .attr("transform", function(d) { 
-                    //positioning at top left of cell to start drawing
-                    return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; 
-                  })
-                //plot everything that needs to be plotted in those cells
-                .each(plot);
-
-  // Titles for the diagonal.
-  cell.filter(function(d) { return d.i === d.j; }).append("text") // get the cells where d.i === d.j
-      .attr("x", padding) //position the text
-      .attr("y", padding)
-      .attr("dy", ".71em")
-      .text(function(d) { return d.x; }); //write the text (current column trait)
-
-  //create brush object with event handlers on start, brush and end
-  var brush = d3.brush()
-      .on("start", brushstart)
-      .on("brush", brushmove)
-      .on("end", brushend)
-      .extent([[0,0],[size,size]]);
-  //bind brush object to cell selection
-  cell.call(brush);
-
-
-  //Does the actual plotting
-  function plot(p) {
-    //current cell
-    var cell = d3.select(this);
-
-    //get domain values (min and max for the current x-trait and y-trait relevant to this cell)
-    x.domain(domainByTrait[p.x]);
-    y.domain(domainByTrait[p.y]);
-
-    //create cell frame
-    cell.append("rect")
-        .attr("class", "frame")
-        .attr("x", padding / 2)
-        .attr("y", padding / 2)
-        .attr("width", size - padding)
-        .attr("height", size - padding);
-
-    //plots the points
-    cell.selectAll("circle")
-        .data(data)
-        .enter()
-        .append("circle")
-          //we are plotting the whole dataset 16 freacking times!!!
-          //it's either that or calling x with a point that does not belong 
-          //to the configured domain results in that point not being processed
-          .attr("cx", function(d) { return x(d[p.x]); })
-          .attr("cy", function(d) { return y(d[p.y]); })
-          .attr("r", 4)
-        .style("fill", function(d) { return color(d.species); });
-  }
+			svg.selectAll(".y.axis")
+				.data(traits)
+				.enter().append("g")
+				  .attr("class", "y axis")
+				  .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
+				  .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
 
 
 
 
-  var brushCell;
 
-  // Clear the previously-active brush, if any.
-  function brushstart(p) {
-    // if the active cell being brushed is not this cell
-    if (brushCell !== this) {
-      //select a future active cell being brushed and bind brush movement to it
-      d3.select(brushCell).call(brush.move, null);
-      //bind this virtual active brushcell to this cell
-      brushCell = this;
-      
-      //m not sure - enforcing domain to be within min and max?
-      x.domain(domainByTrait[p.x]);
-      y.domain(domainByTrait[p.y]);
-    }
-  }
-
-  // Highlight the selected circles.
-  function brushmove(p) {
-
-    var e = d3.brushSelection(this);
-    
-    //we are basically oing through the whole dataset (indexed in the abstart world of d3)
-    //and givin the circle a class hidden if the callback return false
-    svg.selectAll("circle").classed("hidden", function(d) {
-
-      // if e is truthy (brushing is ucrrently happening?) 
-      // do the complicated thing after the ':'
-      return !e
-             ? false
-             : ( // checking whether the point is in the brushing square 
-                 // the brushing square is e[0][0] e[0][1] e[1][0] e[1][1] 
-                   e[0][0] > x(+d[p.x]) 
-                || x(+d[p.x]) > e[1][0]
-                || e[0][1] > y(+d[p.y]) 
-                || y(+d[p.y]) > e[1][1]
-              );
-    });
-  }
-
-  // If the brush is empty, select all circles.
-  function brushend() {
-    var e = d3.brushSelection(this);
-
-    //no more brushing happening
-    if (e === null) 
-      //inactive points were given the hidden class, we are removing this class from them
-      svg.selectAll(".hidden").classed("hidden", false);
-  }
-});
+			cells = svg.selectAll(".cell")
+							.data(cross(traits, traits))  //16 cells not yet drawn with their x and y names and starting positions
+							
+			cells.enter()
+					//start drawing cells
+				    .append("g")
+						.attr("class", "cell")
+						.attr("transform", function(d) {
+							  //positioning at top left of cell to start drawing
+							  return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; 
+						  })
+					//plot everything that needs to be plotted in those cells
+					.each(function(p){
+						plot(this, p, true)
+					});
 
 
-//return a matrix as an array of (cell x name and start pos, y name and pos)
-function cross(a, b) {
-  var c = [],       //will be returned
-      n = a.length, //4 - a is cols
-      m = b.length, //4 - b is identical to a (sepal width,...)
-      i, 
-      j;
 
-  for (i = -1; ++i < n;) 
-    for (j = -1; ++j < m;) 
-      c.push({
-        x: a[i], // cell x name (sepal length,...)
-        i: i,    // cell x starting position (0 1 2 3) ------ (i = -1; ++i < n;) is the same as (i=0; i<n; i++)
-        y: b[j], // cell y name (sepal length,...)
-        j: j     // cell y starting position (0 1 2 3) ------ (i = -1; ++i < n;) is the same as (i=0; i<n; i++)
-      });
-  
-  return c;
-}
+			// Titles for the diagonal.
+			cells.filter(function(d) { return d.i === d.j; }).append("text") // get the cells where d.i === d.j
+				.attr("x", padding) //position the text
+				.attr("y", padding)
+				.attr("dy", ".71em")
+				.text(function(d) { return d.x; }); //write the text (current column trait)
 
-</script>
+
+
+
+
+
+			//create brush object with event handlers on start, brush and end
+			var brush = d3.brush()
+						  .on("start", brushstart)
+						  .on("brush", brushmove)
+						  .on("end", brushend)
+						  .extent([[0,0],[size,size]]);
+			//bind brush object to cell selection
+			cells.call(brush);
+
+
+
+
+			var brushCell;
+
+			// Clear the previously-active brush, if any.
+			function brushstart(p) {
+				// if the active cell being brushed is not this cell
+				if (brushCell !== this) {
+					//select a future active cell being brushed and bind brush movement to it
+					d3.select(brushCell).call(brush.move, null);
+					//bind this virtual active brushcell to this cell
+					brushCell = this;
+				  
+					//m not sure - enforcing domain to be within min and max?
+					x.domain(domainByTrait[p.x]);
+					y.domain(domainByTrait[p.y]);
+				}
+			}
+
+			// Highlight the selected circles.
+			function brushmove(p) {
+
+				var e = d3.brushSelection(this);
+				
+				//we are basically oing through the whole dataset (indexed in the abstart world of d3)
+				//and givin the circle a class hidden if the callback return false
+				svg.selectAll("circle").classed("hidden", function(d) {
+
+				  // if e is truthy (brushing is ucrrently happening?) 
+				  // do the complicated thing after the ':'
+					return !e
+							? false
+							: ( // checking whether the point is in the brushing square 
+								// the brushing square is e[0][0] e[0][1] e[1][0] e[1][1] 
+								   e[0][0] > x(+d[p.x]) 
+								|| x(+d[p.x]) > e[1][0]
+								|| e[0][1] > y(+d[p.y]) 
+								|| y(+d[p.y]) > e[1][1]
+							);
+				});
+			}
+
+			// If the brush is empty, select all circles.
+			function brushend() {
+				var e = d3.brushSelection(this);
+
+				//no more brushing happening
+				if (e === null) 
+					//inactive points were given the hidden class, we are removing this class from them
+					svg.selectAll(".hidden").classed("hidden", false);
+			}
+		};
+
+		const updateScatterPlotMatrix = function(){
+			console.log('------------------------------------------------------')
+			//Iterate through each col names and get min, max (extent)
+			traits.forEach(function(trait) {
+				//d3 extent get the range of saome data given the data array of object and a function that iterates through the data
+				//to extract the value of one col
+				domainByTrait[trait] = d3.extent(data, function(d) { /*console.log(d);*/ return d[trait]; });
+			});
+			svg.selectAll(".x.axis").each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis);  });
+			svg.selectAll(".y.axis").each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis);  });
+			svg.selectAll(".cell").each(function(p) { plot(this, p, false) });
+		}
+		
+		//Read csv file
+		d3.csv("./flowers.csv", function(error, fileData) {
+			// data = fileData;
+			// ploltScatterPlotMatrix(fileData)
+			ploltScatterPlotMatrix(fileData.filter((imte, index) => index < 50))
+			console.log('Finished Part 1')
+			// ploltScatterPlotMatrix(fileData.filter((imte, index) => index < 100))
+			ploltScatterPlotMatrix(fileData.filter((imte, index) => index < 150))
+		});
+
+
+
+
+
+
+		//Does the actual plotting
+		const plot = function(cellRef, p, doSetup) {
+			//current cell
+			var cell = d3.select(cellRef);
+			console.log(cellRef)
+			console.log(cell)
+
+			//get domain values (min and max for the current x-trait and y-trait relevant to this cell)
+			x.domain(domainByTrait[p.x]);
+			y.domain(domainByTrait[p.y]);
+			//console.log(x)
+			//console.log(y)
+			
+			if(doSetup)
+				drawCell(cell)
+			else
+				console.log(data)
+			
+			drawData(cell, p)
+		}
+		
+		const drawData = function(aCell, aCellData){
+			//plots the points
+			let joins = aCell.selectAll("circle")
+				             .data(data)
+							 
+			//console.log(joins)
+			joins.exit().remove();
+			//console.log(joins)
+			
+			//console.log()
+			joins.enter()
+				 .append("circle")
+				    //we are plotting the whole dataset 16 freacking times!!!
+				    //it's either that or calling x with a point that does not belong 
+				    //to the configured domain results in that point not being processed
+				    // .attr("cx", function(d) { return x(d[aCellData.x]); })
+				    // .attr("cy", function(d) { return y(d[aCellData.y]); })
+				    .attr("r", 0)
+				    // .style("fill", function(d) { console.log(d.species); return color(d.species); });
+
+
+            //update all circles to new positions
+            joins.transition()
+                 .duration(500)
+				    // we are plotting the whole dataset 16 freacking times!!!
+				    // it's either that or calling x with a point that does not belong 
+				    // to the configured domain results in that point not being processed
+				    // .attr("cx", function(d) { return x(d[aCellData.x]); })
+				    // .attr("cy", function(d) { return y(d[aCellData.y]); })
+				    // .attr("r", 4)
+				    // .style("fill", function(d) { console.log(d.species); return color(d.species); });
+				
+		}
+		const drawCell = function(aCell){
+			//create cell frame
+			aCell.append("rect")
+				.attr("class", "frame")
+				.attr("x", padding / 2)
+				.attr("y", padding / 2)
+				.attr("width", size - padding)
+				.attr("height", size - padding);	
+		}
+
+		//return a matrix as an array of (cell x name and start pos, y name and pos)
+		const cross = function(a, b) {
+			var c = [],       //will be returned
+				n = a.length, //4 - a is cols
+				m = b.length, //4 - b is identical to a (sepal width,...)
+				i, 
+				j;
+
+			for (i = -1; ++i < n;) 
+				for (j = -1; ++j < m;) 
+					c.push({
+						x: a[i], // cell x name (sepal length,...)
+						i: i,    // cell x starting position (0 1 2 3) ------ (i = -1; ++i < n;) is the same as (i=0; i<n; i++)
+						y: b[j], // cell y name (sepal length,...)
+						j: j     // cell y starting position (0 1 2 3) ------ (i = -1; ++i < n;) is the same as (i=0; i<n; i++)
+					});
+			return c;
+		}
+
+	</script>
+</body>
+</html>
