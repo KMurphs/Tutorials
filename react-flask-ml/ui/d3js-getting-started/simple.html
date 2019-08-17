@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="my_dataviz"></div>
+		<script src="https://d3js.org/d3.v4.js"></script>
+        <script>
+            
+
+			// set the dimensions and margins of the graph
+			var margin = {top: 10, right: 30, bottom: 30, left: 60},
+				width = 460 - margin.left - margin.right,
+				height = 400 - margin.top - margin.bottom;
+			var traits, domainByTrait, x, y
+			
+			// append the svg object to the body of the page
+			var svg = d3.select("#my_dataviz")
+			  .append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform",
+					  "translate(" + margin.left + "," + margin.top + ")");
+
+			//Read the data
+			d3.csv("./flowers.csv", function(fileData) {
+				drawData(fileData.filter((item, index) => index < 150))
+				console.log("----------------------------")
+				updateDate(fileData.filter((item, index) => index < 100))
+				console.log("----------------------------")
+				updateDate(fileData.filter((item, index) => index < 150))
+				
+			})
+			
+			function drawData(data){
+				//sepalLength,sepalWidth,petalLength,petalWidth,species
+				console.log(data)
+				
+				traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; }) //get columns names except for species
+				domainByTrait = {}
+				traits.forEach(function(trait) {
+					domainByTrait[trait] = d3.extent(data, function(d) { /*console.log(d);*/ return d[trait]; });
+				});
+				console.log(domainByTrait)
+
+				// Add X axis
+				x = d3.scaleLinear()
+					.domain(domainByTrait['sepalLength'])
+					//.domain([0,10])
+					.range([ 0, width ]);
+				
+				svg.append("g")
+					.attr("class", "axis")
+					.attr("transform", "translate(0," + height + ")")
+					.call(d3.axisBottom(x));
+
+				// Add Y axis
+				y = d3.scaleLinear()
+					//.domain([0,10])
+					.domain(domainByTrait['sepalWidth'])
+					.range([ height, 0]);
+				
+				svg.append("g")
+				    .attr("class", "axis")
+					.call(d3.axisLeft(y));
+                
+				let i = 0
+				// Add dots
+				svg.append('g')
+				    .classed('content', true)
+					.selectAll("circle")
+					.data(data)
+					.enter()
+					.append("circle")
+					  .attr("cx", function (d) { /*console.log(`${i++} -- ${d.sepalLength} -- ${x(d.sepalLength)}`); */return x(d.sepalLength); } )
+					  .attr("cy", function (d) { return y(d.sepalWidth); } )
+					  .attr("r", 1.5)
+					  .style("fill", "#69b3a2")
+
+			}
+			
+			function updateDate(data){
+			
+				domainByTrait = {}
+				traits.forEach(function(trait) {
+					domainByTrait[trait] = d3.extent(data, function(d) { /*console.log(d);*/ return d[trait]; });
+				});
+				
+				///////////////
+				svg.selectAll('g.axis').each(function(d, i) { 
+					console.log(this)
+					if(i == 0){
+						x.domain(domainByTrait['sepalLength'])
+						d3.select(this).transition().duration(500).call(d3.axisBottom(x)); 					
+					} else if(i == 1){
+						y.domain(domainByTrait['sepalWidth'])
+						d3.select(this).transition().duration(500).call(d3.axisLeft(y)); 					
+					}
+				});
+				//////////////
+				let canvas = svg.select(".content")
+				
+				let exisitngCircles = canvas.selectAll("circle").data(data)
+				console.log(exisitngCircles)
+				
+				//exisitngCircles = svg.selectAll(".content circle").data(data)
+				
+				exisitngCircles.style("fill", "blue")
+				let i = 0;
+				exisitngCircles.exit().remove();//remove unneeded circles
+
+				let newCircles = exisitngCircles.enter()
+				                .append("circle")
+								.attr("r",10)
+								.style("fill", "red")
+					            .attr("cx", 0)
+					            .attr("cy", 0)
+				                //.each(function(d, i) { console.log(`${i} --- ${JSON.stringify(d)}`) })	
+
+				
+				let tempX = []
+				let tempY = []
+				newCircles.merge(exisitngCircles)
+					    .transition()
+                        .duration(500)
+				        .attr("cx", function (d) { return x(d.sepalLength); } )
+				        .attr("cy", function (d) { return y(d.sepalWidth); } )
+						    .attr("r", 1.5)
+				//        .each(function(d, i) { console.log(`${i} --- ${JSON.stringify(d)}`) })
+				
+				//console.log(Math.min.apply(Math, tempX))
+				//console.log(Math.max.apply(Math, tempX))
+				//console.log(Math.min.apply(Math, tempY))
+				//console.log(Math.max.apply(Math, tempY))
+				//
+				//console.log(x.domain())
+				//console.log(y.domain())
+				//console.log(x.range())
+				//console.log(y.range())				
+				
+				//svg.selectAll('g.axis').each(function(d, i) { 
+				//	console.log(this)
+				//	if(i == 0){
+				//		x.domain(domainByTrait['sepalLength'])
+				//		d3.select(this).transition().duration(500).call(d3.axisBottom(x)); 					
+				//	} else if(i == 1){
+				//		y.domain(domainByTrait['sepalWidth'])
+				//		d3.select(this).transition().duration(500).call(d3.axisLeft(y)); 					
+				//	}
+				//});
+				console.log(x.domain())
+				console.log(y.domain())
+				console.log(x.range())
+				console.log(y.range())	
+			}
+
+
+
+            
+        </script>
+    </body>
+</html>
