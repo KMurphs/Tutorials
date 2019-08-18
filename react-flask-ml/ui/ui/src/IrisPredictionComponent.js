@@ -63,14 +63,14 @@ class IrisPredictionComponent extends React.Component{
     // this.setState({value: event.target.value});
   }
   handleDataFile(fileContent){
-    console.log(fileContent.split('\n'))
+    // console.log(fileContent.split('\n'))
     let temp1 = [];
     fileContent.split('\n').forEach((item, index) => {
       const temp = item.replace(new RegExp(/\r/g), '').split(',')
       if(parseFloat(temp[0]))
         temp1.push(temp.splice(0,4).join(',').replace(new RegExp(/ /g), ''))
     })
-    console.log(temp1)
+    // console.log(temp1)
     histories = temp1
   }
 
