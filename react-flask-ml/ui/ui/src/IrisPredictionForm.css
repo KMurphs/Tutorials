@@ -1,0 +1,26 @@
+
+.iris-prediction-form{
+  /* width: 50%;
+  margin: 0 auto; */
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  min-width: 400px;
+  margin: 0 auto;
+}
+
+.iris-prediction-form > .input-slider{
+  /* background-color: red; */
+  /* margin-bottom: 1rem; */
+}
+
+.iris-prediction-form > div > label {
+    background-color: #797979;
+    padding: .5rem 2rem;
+    font-size: 0.8rem;
+    width: 50%;
+    cursor: pointer;
+}
+.iris-prediction-form > div > label:hover {
+    background-color: #555;
+}
