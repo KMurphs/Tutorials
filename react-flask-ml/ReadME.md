@@ -272,3 +272,7 @@ and ``npm run build`` when ready to deploy to production.
 
 
 chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+
+
+pip install waitress
+waitress-serve --call 'flaskr:create_app'
