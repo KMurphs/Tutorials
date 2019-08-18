@@ -47,6 +47,14 @@
   margin: 0 auto;
   margin-top: 2rem;
 }
+.App-main-content > .ScatterPlotMatrix-container{
+  position: absolute;
+    top: 15%;
+    right: 2%;
+    width: 600px;
+    background-color: rgba(0,0,0,0.5);
+    height: 600px;
+}
 .iris-prediction-component > div:first-child{
   margin: 0;
   width: 20%;
