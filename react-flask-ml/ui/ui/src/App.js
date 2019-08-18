@@ -8,10 +8,11 @@ import ScatterPlotMatrix from './ScatterPlotMatrix';
 // import IrisPredictionForm from './IrisPredictionForm';
 // import InputSlider from './InputSlider';
 
-import flowers from './flowers.csv';
+import iris_background_1 from './imgs/iris_background_1.jpg';
 
-const d3 = window.d3;
-let fileContent = []
+// import flowers from './flowers.csv';
+// const d3 = window.d3;
+// let fileContent = []
 
 class App extends React.Component{
   constructor(props){
@@ -45,7 +46,7 @@ class App extends React.Component{
 
 
   render() {
-    return (<div className="App" style={{backgroundImage: "url('./imgs/iris_background_1.jpg')"}}>
+    return (<div className="App" style={{backgroundImage: `url('${iris_background_1}')`}}>
       <main className="App-main-content" >
         <MyTimer />
         <h3>

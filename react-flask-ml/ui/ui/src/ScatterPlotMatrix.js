@@ -2,7 +2,7 @@ import React from 'react';
 import './ScatterPlotMatrix.css';
 
 const d3 = window.d3; //import the script normally in the html file before the app root element
-let width, size, padding, x, y, xAxis, yAxis, color, wasSetup, domainByTrait, svg, cells, traits, n, data;
+let width, size, padding, x, y, xAxis, yAxis, color, domainByTrait, svg, cells, traits, n;//, data, wasSetup;
 
 class ScatterPlotMatrix extends React.Component{
 
@@ -22,7 +22,7 @@ class ScatterPlotMatrix extends React.Component{
 		padding = 20;
 		size = (width - 4 * padding) / 4;
 		
-		wasSetup = false;
+		// wasSetup = false;
 
 		//scales for subframes
 		x = d3.scaleLinear().range([padding / 2, size - padding / 2]);

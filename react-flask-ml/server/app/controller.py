@@ -3,8 +3,10 @@
 from app import app
 from app.views import views
 from app.ml_model import model
-from flask import request
+from flask import request, send_from_directory
 import numpy as np
+import os
+import re
 
 def init():
 	# print(app.config)
@@ -12,13 +14,13 @@ def init():
 	model.train()
 
 
-# https://flask.palletsprojects.com/en/1.1.x/api/#flask.Request
-# request.args is to get urls arguments  GET
-# request.form to get form parameter POST
-@app.route('/')
-def index():
-	print(train.hello())
-	return views.index()
+# # https://flask.palletsprojects.com/en/1.1.x/api/#flask.Request
+# # request.args is to get urls arguments  GET
+# # request.form to get form parameter POST
+# @app.route('/')
+# def index():
+# 	print(train.hello())
+# 	return views.index()
 
 
 @app.route('/api/predict', methods = ['POST'])
@@ -70,3 +72,33 @@ def form_predict():
 @app.route('/about')
 def about():
 	return views.about()
+
+
+
+
+# Serve React App
+@app.route('/', defaults={'path': ''}, methods = ['GET'])
+@app.route('/<path:path>', methods = ['GET'])
+def serve(path):
+	# print('\n')
+	# print(path)
+	# print(app.static_folder + path)
+	# print(app.static_folder) # C:\PersonalProjects\Tutorials\react-flask-ml\server\app\static\react-app\build
+	
+
+
+	if path != "" and os.path.exists(app.static_folder + path):
+		response = send_from_directory(app.static_folder, path)
+	else:
+		response = send_from_directory(app.static_folder, 'index.html')
+	
+	# x = re.search(".jpg$", path)
+	# if (x):
+	# 	print("YES! We have a match!")
+	# 	response.headers['Content-Type'] = 'image/jpeg'
+	# else:
+	# 	print("No match")
+
+	# response.headers['Content-Type'] = 'text/html; charset=utf-8'
+	
+	return response
