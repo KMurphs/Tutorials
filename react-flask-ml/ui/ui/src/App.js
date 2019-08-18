@@ -3,10 +3,15 @@ import React from 'react';
 import './App.css';
 import MyTimer from './MyTimer';
 import IrisPredictionComponent from './IrisPredictionComponent';
+import ScatterPlotMatrix from './ScatterPlotMatrix';
 // import IrisPredictionResult from './IrisPredictionResult';
 // import IrisPredictionForm from './IrisPredictionForm';
 // import InputSlider from './InputSlider';
 
+import flowers from './flowers.csv';
+
+const d3 = window.d3;
+let fileContent = []
 
 class App extends React.Component{
   constructor(props){
@@ -19,13 +24,20 @@ class App extends React.Component{
         'species': 'Iris_versicolor',
         'inputs': '13.2, 52.4, 26.3, 21.2',
       },
+      fileData: [],
     }
+		d3.csv(flowers, (error, file) => {
+			console.log('Read data file')
+      fileContent = file
+		  // this.state['fileData'] = fileContent.filter((imte, index) => index < 50)
+      console.log(this.state.fileData)
+		});
   }
 
   componentDidMount() {
     this.TimerID = setInterval(
       () => this.tick(), 
-      2000
+      3000
     )
   }
 
@@ -41,6 +53,7 @@ class App extends React.Component{
         'species': this.state.species[this.state.counter],
         'inputs': this.state.data['inputs'],
       },
+      fileData: fileContent.filter((imte, index) => index < (50 * (this.state.counter + 1)))
     })
   }
 
@@ -53,6 +66,10 @@ class App extends React.Component{
           Change the input controls and see live prediction of the ML Model.
         </h3>
         
+        <div className="ScatterPlotMatrix-container">
+          <ScatterPlotMatrix data={this.state.fileData}/>
+          {/* <ScatterPlotMatrix data={[{'key': 'temp1'}, {'key': 'temp2'}, {'key': 'temp3'}]}/> */}
+        </div>
         <div>
           <IrisPredictionComponent />
         </div>

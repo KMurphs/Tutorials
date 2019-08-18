@@ -1,0 +1,52 @@
+		svg {
+		  font: 10px sans-serif;
+		  padding: 10px;
+		}
+
+
+		.axis,
+		.frame {
+		  shape-rendering: crispEdges;
+		}
+		.axis line {
+		  stroke: gray;
+		}
+		.axis path {
+		  /* display: none; */
+			stroke: gray; 
+			fill: none;
+			stroke-width: 1px;
+		}
+    .axis text{
+      fill: gray;
+    }
+
+
+
+
+		.cell text {
+		  font-weight: bold;
+		  text-transform: capitalize;
+		  fill: black;
+		}
+
+		.frame {
+		  fill: none;
+		  stroke: #aaa;
+		}
+
+		circle {
+		  fill-opacity: .7;
+		  transition: all .6s;
+		}
+
+		circle.hidden {
+		  fill: #ccc !important;
+		  transition: all .6s;
+		}
+
+		.extent {
+		  fill: #000;
+		  fill-opacity: .125;
+		  stroke: #fff;
+		}
