@@ -49,8 +49,8 @@
 }
 .App-main-content > .ScatterPlotMatrix-container{
   position: absolute;
-    top: 15%;
-    right: 2%;
+    top: -1%;
+    right: 1%;
     width: 600px;
     background-color: rgba(0,0,0,0.5);
     height: 600px;

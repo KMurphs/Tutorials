@@ -9,7 +9,7 @@
 		  shape-rendering: crispEdges;
 		}
 		.axis line {
-		  stroke: gray;
+		  stroke: #333;
 		}
 		.axis path {
 		  /* display: none; */
@@ -32,7 +32,7 @@
 
 		.frame {
 		  fill: none;
-		  stroke: #aaa;
+		  stroke: #777;
 		}
 
 		circle {
@@ -41,7 +41,7 @@
 		}
 
 		circle.hidden {
-		  fill: #ccc !important;
+		  fill: #444 !important;
 		  transition: all .6s;
 		}
 
