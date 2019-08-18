@@ -229,3 +229,50 @@ $ flask run
  * Debug mode: off
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 ```
+
+Note that the templates folder must be situated as in 
+```
+|-- server (the project)
+	|--	run.py
+	|--	app  
+		|-- templates	
+				|-- base.html
+				|-- index.html
+```
+
+#### Restarting Server on Change
+```
+$ export FLASK_APP=main.py
+$ export FLASK_DEBUG=1
+$ python -m flask run
+```
+
+
+
+#### Posting to the server
+
+curl -X POST http://127.0.0.1:5000/data/predict -d {\"foo\":\"bar\"}
+curl -d @test.data -X POST http://127.0.0.1:5000/api/predict?format=csv
+in the client folder there is post man collection that can be used to submit requests to the server.
+
+
+
+
+## [The ui](https://create-react-app.dev/docs/getting-started)
+
+Setup with
+```
+npx create-react-app my-app
+cd my-app
+npm start
+```
+and ``npm run build`` when ready to deploy to production.
+
+
+
+
+chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+
+
+pip install waitress
+waitress-serve --call 'flaskr:create_app'
