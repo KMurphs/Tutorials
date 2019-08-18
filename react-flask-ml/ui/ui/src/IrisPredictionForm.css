@@ -13,3 +13,14 @@
   /* background-color: red; */
   /* margin-bottom: 1rem; */
 }
+
+.iris-prediction-form > div > label {
+    background-color: #797979;
+    padding: .5rem 2rem;
+    font-size: 0.8rem;
+    width: 50%;
+    cursor: pointer;
+}
+.iris-prediction-form > div > label:hover {
+    background-color: #555;
+}

@@ -14,6 +14,7 @@ class IrisPredictionComponent extends React.Component{
       species: 'Iris_versicolor',
     }
     this.handleChange = this.handleChange.bind(this);
+    this.handleDataFile = this.handleDataFile.bind(this);
   }
 
   componentDidMount(){
@@ -37,6 +38,18 @@ class IrisPredictionComponent extends React.Component{
             inputs: res.predictions[res.predictions.length - 1].inputs,
             species: res.predictions[res.predictions.length - 1].prediction.replace(new RegExp(/-/g), '_'),
           })
+          let temp = []
+          res.predictions.forEach((item) => {
+            temp.push({
+              sepalLength: item.inputs[0], 
+              sepalWidth: item.inputs[1],
+              petalLength: item.inputs[2], 
+              petalWidth: item.inputs[3], 
+              species: item.prediction.replace(new RegExp(/-/g), '_'),
+            })
+          })
+          // console.log(temp)
+          this.props.onNewData(temp);
         })
         
       }
@@ -48,6 +61,17 @@ class IrisPredictionComponent extends React.Component{
     histories.push(values.toString())
     // console.log(values.toString().replace(new RegExp(/,/g), ', '))
     // this.setState({value: event.target.value});
+  }
+  handleDataFile(fileContent){
+    console.log(fileContent.split('\n'))
+    let temp1 = [];
+    fileContent.split('\n').forEach((item, index) => {
+      const temp = item.replace(new RegExp(/\r/g), '').split(',')
+      if(parseFloat(temp[0]))
+        temp1.push(temp.splice(0,4).join(',').replace(new RegExp(/ /g), ''))
+    })
+    console.log(temp1)
+    histories = temp1
   }
 
   getData(url) {
@@ -83,7 +107,7 @@ class IrisPredictionComponent extends React.Component{
     <section className="iris-prediction-component">
       <div>
         <p>Input Controls</p>
-        <IrisPredictionForm onChange={ this.handleChange }/>
+        <IrisPredictionForm onChange={ this.handleChange } onDataFile={ this.handleDataFile }/>
       </div>
       <div>
         <p>Prediction</p>

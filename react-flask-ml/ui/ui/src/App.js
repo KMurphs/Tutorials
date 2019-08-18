@@ -24,70 +24,41 @@ class App extends React.Component{
         'species': 'Iris_versicolor',
         'inputs': '13.2, 52.4, 26.3, 21.2',
       },
-      fileData: [],
+      predictionData: [],
     }
-		d3.csv(flowers, (error, file) => {
-			console.log('Read data file')
-      fileContent = file
-		  // this.state['fileData'] = fileContent.filter((imte, index) => index < 50)
-      console.log(this.state.fileData)
-		});
+    this.handleNewData = this.handleNewData.bind(this);
+		// d3.csv(flowers, (error, file) => {
+		// 	console.log('Read data file')
+    //   fileContent = file
+    //   console.log(fileContent) //array of {sepalLength: "4.9", sepalWidth: "3.0", petalLength: "1.4", petalWidth: "0.2", species: "setosa"}
+		//   // this.state['fileData'] = fileContent.filter((imte, index) => index < 50)
+    //   // console.log(this.state.fileData)
+		// });
   }
 
-  componentDidMount() {
-    this.TimerID = setInterval(
-      () => this.tick(), 
-      3000
-    )
+  handleNewData(newData){
+    // {sepalLength: "4.9", sepalWidth: "3.0", petalLength: "1.4", petalWidth: "0.2", species: "setosa"}
+    // console.log(newData)
+    this.setState({ predictionData: this.state.predictionData.concat(newData)})
+    // console.log(this.state.predictionData)
   }
 
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  tick(){
-    this.setState({
-      counter: this.state.counter === 2 ? 0 : this.state.counter + 1,
-      date: new Date(),
-      data: {
-        'species': this.state.species[this.state.counter],
-        'inputs': this.state.data['inputs'],
-      },
-      fileData: fileContent.filter((imte, index) => index < (50 * (this.state.counter + 1)))
-    })
-  }
 
   render() {
     return (<div className="App" style={{backgroundImage: "url('./imgs/iris_background_1.jpg')"}}>
       <main className="App-main-content" >
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
         <MyTimer />
         <h3>
           Change the input controls and see live prediction of the ML Model.
         </h3>
         
         <div className="ScatterPlotMatrix-container">
-          <ScatterPlotMatrix data={this.state.fileData}/>
-          {/* <ScatterPlotMatrix data={[{'key': 'temp1'}, {'key': 'temp2'}, {'key': 'temp3'}]}/> */}
+          <ScatterPlotMatrix data={this.state.predictionData}/>
         </div>
         <div>
-          <IrisPredictionComponent />
+          <IrisPredictionComponent onNewData={ this.handleNewData }/>
         </div>
-        {/* <div className="container">
-          <IrisPredictionForm/>
-        </div>
-        <div className="container">
-          <IrisPredictionResult results={this.state.data}/>
-        </div> */}
-        
-        {/* <IrisPredictionForm /> */}
-        {/* <InputSlider /> */}
-        {/* <section id="Time">{this.state.date.toLocaleTimeString()}</section>  */}
-        
-        {/* <IrisPredictionResult results={this.state.data}/> */}
       </main>
-      {/* <div className="overlay"></div> */}
-      
     </div>)
   };
 }
