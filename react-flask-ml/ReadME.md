@@ -2,6 +2,8 @@
 
 
 
+
+
 ## [The Server](https://scotch.io/tutorials/getting-started-with-flask-a-python-microframework)
 
 ### Setting Up
@@ -268,11 +270,90 @@ npm start
 ```
 and ``npm run build`` when ready to deploy to production.
 
+Since the ui is using xmlhttp request, one need to disable CORS policy on the browser being used. This is only for development purposes. 
+Long term solution would be to have the back end send the correct CORS headers, or do the xmlhttp request against the original source url that served the page. 
+But our backend isn't serving the page at the moment.
 
 
-
+if one is using chrome, navigate the chrome installation folder ``C:\Program Files (x86)\Google\Chrome\Application``, get a cmd window at that folder and issue
+```
 chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+```
+This will open a new window with CORS policy disabled. Use this window for all the testing and development until the ui is complete.
+At this point, ``npm run build`` can be executed to generate build folder.
 
 
-pip install waitress
-waitress-serve --call 'flaskr:create_app'
+Also, note that one should have a look at the images and prepare them for production.
+Using paint.net, that should involve, resizing the image with
+```
+Resampling:                       Best Quality
+By absolute size:                 checked
+Maintain aspect ratio:            checked
+Pixel size width and height:      around 1200px
+Resolution:                       72 pixels/inch
+Print size width and height:      around 15inches
+```
+This will significantly reduce the size of the image.
+
+Then save the image, with the settings:
+```
+Quality:              90%
+Chroma Subsampling:   4:4:4(Best Quality)
+```
+The file size should go down to about 500kb
+
+
+
+## Serving the app
+At this point the ui can be served by our backend. Move the build folder generated for the ui at ``react-flask-ml\server\app\static\react-app``
+Then configure the app, to serve the folder.
+
+In the app folder, add the following lines to __init__.py
+```
+static_folder = 'static\\react-app\\build'
+if 'APP_STATIC_FOLDER' in os.environ:
+  static_folder = os.environ['APP_STATIC_FOLDER']
+
+# Initialize the app
+app = Flask(__name__, instance_relative_config=True, static_folder=static_folder)
+```
+The environment variable will be used in our container. For now, since it isn't set it will default to ``static\\react-app\\build`` from this folder (where __init__.py is located along with controller.py)
+
+Then in order to serve all the index.html resources, add these lines at the end of controller.py
+```
+# Serve React App
+@app.route('/', defaults={'path': ''}, methods = ['GET'])
+@app.route('/<path:path>', methods = ['GET'])
+def serve(path):
+
+  # print(path)
+  # print(app.static_folder) # C:\PersonalProjects\Tutorials\react-flask-ml\server\app\static\react-app\build - on windows
+
+  if path != "" and os.path.exists(app.static_folder + path):
+    response = send_from_directory(app.static_folder, path)
+  else:
+    response = send_from_directory(app.static_folder, 'index.html')
+  
+  return response
+```
+Note that in order to work properly, the files url in the index.html should start with "/".
+
+
+Then, ``python run`` should properly serve the application.
+
+
+## [Containerizing](https://medium.com/@smirnov.am/running-flask-in-production-with-docker-1932c88f14d0)
+
+We will setup a nginx server (exposed to the outside world) and uwsig server as the python production server (instead of the native flask server).
+For that, we setup a ``nginx.conf``, a ``uwsgi.ini`` and a ``start.sh`` file. The first two will setup the nginx and uwsgi servers. The last one will launch them when the container start.
+
+A Dockerfile can be written, we set up the APP_STATIC_FOLDER environment variable (for linux now), install python utils, send the context, convert all the files in the context to linux end-of-line style, place the nginx.conf file where it's suppoed to be, install our python app requirements.txt, run our start.sh file at bootup.
+
+
+From thereon,
+```
+docker build -t cloud.canister.io:5000/kmurphs/react-flask-ml -f Dockerfile .
+docker run --name react-flask-ml --net testnetwork -p 60060:80 -t cloud.canister.io:5000/kmurphs/react-flask-ml
+```
+
+A visit at localhost:60060 should present our react-flask-ml app.
