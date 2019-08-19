@@ -28,7 +28,8 @@ class IrisPredictionComponent extends React.Component{
         })
         histories = [];
         // console.log(temp.substr(2))
-        this.postData('http://localhost:5000/api/predict?format=csv', temp.substr(2))
+        //this.postData('http://localhost:5000/api/predict?format=csv', temp.substr(2))
+        this.postData('/api/predict?format=csv', temp.substr(2))
         .then((res)=>{
           // console.log(res.predictions)
           // console.log(res.predictions[res.predictions.length - 1])
