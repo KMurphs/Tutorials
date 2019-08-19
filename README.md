@@ -52,3 +52,19 @@ A Powershell script for these steps might look like this:
 	git commit -m “Move old_b files into subdir”
 ```
 
+
+Note: All my commit on etion's laptop were made with the etion email address that i couldn't verify due to spam restrictions.
+So I had to change all the commit to be kibongesp@gmail.com follwing [this article](https://dev.to/chrisvasqm/how-to-change-the-author-of-all-your-commits-2j7a)
+```
+git filter-branch -f --env-filter "GIT_AUTHOR_NAME='kmurphs'; GIT_AUTHOR_EMAIL='kibongesp@gmail.com'; GIT_COMMITTER_NAME='kmurphs'; GIT_COMMITTER_EMAIL='kibongesp@gmail.com';" HEAD
+```
+then
+```
+git push --force origin master
+```
+
+Then also change email on the laptop
+```
+git config --global user.email "kibongesp@gmail.com"
+```
+This is to change it globally. Remove the --global for only the current repository
