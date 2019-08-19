@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/build/static/css/main.027d732d.chunk.css",
-    "main.js": "/build/static/js/main.1fbc2aa1.chunk.js",
-    "main.js.map": "/build/static/js/main.1fbc2aa1.chunk.js.map",
+    "main.css": "/build/static/css/main.ce6e8769.chunk.css",
+    "main.js": "/build/static/js/main.f10043d8.chunk.js",
+    "main.js.map": "/build/static/js/main.f10043d8.chunk.js.map",
     "runtime~main.js": "/build/static/js/runtime~main.28e3b21f.js",
     "runtime~main.js.map": "/build/static/js/runtime~main.28e3b21f.js.map",
     "static/js/2.89fe0ae5.chunk.js": "/build/static/js/2.89fe0ae5.chunk.js",
     "static/js/2.89fe0ae5.chunk.js.map": "/build/static/js/2.89fe0ae5.chunk.js.map",
     "index.html": "/build/index.html",
-    "precache-manifest.a6adef0be12d88ac9873f1031b1c0df2.js": "/build/precache-manifest.a6adef0be12d88ac9873f1031b1c0df2.js",
+    "precache-manifest.9511a86d3190c4c0ba481ac905992f2d.js": "/build/precache-manifest.9511a86d3190c4c0ba481ac905992f2d.js",
     "service-worker.js": "/build/service-worker.js",
-    "static/css/main.027d732d.chunk.css.map": "/build/static/css/main.027d732d.chunk.css.map",
+    "static/css/main.ce6e8769.chunk.css.map": "/build/static/css/main.ce6e8769.chunk.css.map",
     "static/media/Iris_setosa.jpg": "/build/static/media/Iris_setosa.ae50200c.jpg",
     "static/media/Iris_versicolor.jpg": "/build/static/media/Iris_versicolor.5a579307.jpg",
-    "static/media/Iris_virginica.jpg": "/build/static/media/Iris_virginica.d805f204.jpg",
+    "static/media/Iris_virginica.jpg": "/build/static/media/Iris_virginica.3af8a5e7.jpg",
     "static/media/iris_background_1.jpg": "/build/static/media/iris_background_1.c6874412.jpg"
   }
 }
