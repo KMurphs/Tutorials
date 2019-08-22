@@ -1,0 +1,61 @@
+version: '3'
+services:
+  wp:
+    # username/app-name:tag or 
+    # registry-ip:registry:port/username/app-name:tag
+    image: kmurphs/wp-app:latest # tagged for use with docker hub
+    # https://docs.docker.com/compose/compose-file/#build
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    environment:
+      WORDPRESS_DB_PASSWORD: EFPWMJZZKJSERTFY
+  mysql:
+    image: "mysql:5.7"
+    environment:
+      MYSQL_ROOT_PASSWORD: EFPWMJZZKJSERTFY
+    ports:
+      - "8002:3306"
+    volumes:
+      - wp-datavolume:/var/lib/mysql
+volumes:
+  wp-datavolume:
+
+# note that the wp: build option relies on the dockerfile that's contained in this specific folder
+# start the app: docker-compose up -d
+# stop the app: docker-compose down
+# rebuild and start the app: docker-compose up -d --build
+
+# The last lines creates a volume in the docker partition on my drive. The volume is stored in 
+# /var/lib/docker/volumes and it is maooed in the container at /var/lib/mysql. The mapping is 
+# identified by "wp-datavolume"
+
+# Push an image:
+# docker push kmurphs/get-started:tagname /defaults to docker hub
+# docker push cloud.canister.io:5000/kmurphs/reporting-tool-microservice
+# in this specific case: docker push kmurphs/wp-app:latest
+
+
+
+
+# Other useful commands for docker-compose are start/stop, config, ps and down.
+  # Starts all stopped containers in the work directory
+  # docker-compose start
+
+  # Stops all currently running containers in the work directory
+  # docker-compose stop
+
+  # Validates and shows the configuration
+  # docker-compose config
+
+  # Lists all running containers in the work directory
+  # docker-compose ps
+
+  # Stops and removes all containers in the work directory
+  # docker-compose down
+
+
+# sudo apt-get update && sudo apt-get upgrade
+# sudo apt-get update && sudo apt-get dist-upgrade
