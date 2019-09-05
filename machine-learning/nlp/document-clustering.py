@@ -17,7 +17,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 import pandas as pd
 
-document  = [ "This is the most beautiful place in the world.", 
+corpus = [ "This is the most beautiful place in the world.", 
 			"This man has more skills to show in cricket than any other game.", 
 			"Hi there! how was your ladakh trip last month?", 
 			"There was a player who had scored 200+ runs in single cricket innings in his career.", 
@@ -34,28 +34,43 @@ document  = [ "This is the most beautiful place in the world.",
 			"Because in the end, you won’t remember the time you spent working in the office or mowing your lawn. Climb that goddamn mountain.", 
 			"Isn’t cricket supposed to be a team sport? I feel people should decide first whether cricket is a team game or an individual sport."]
 
-vectorizer = TfidfVectorizer(stop_words='english')
-X = vectorizer.fit_transform(document)
+
+vectorizer = None
+model = None
 
 
-true_k = 2
-model = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1)
+def train():
+	print("Preparing Data and Training Model")
+	vectorizer = TfidfVectorizer(stop_words='english')
+	X = vectorizer.fit_transform(corpus)
+	# print(X)
 
-
-print("\n")
-print("Prediction")
-for j in range(20):
-
+	true_k = 2
+	model = KMeans(n_clusters = true_k, init = 'k-means++', max_iter = 100, n_init = 1)
 	model.fit(X)
 
 	order_centroids = model.cluster_centers_.argsort()[:, ::-1]
 	terms = vectorizer.get_feature_names()
 
-	# for i in range(true_k):
-	# 	print("Cluster %d:" % i)
-	# 	for ind in order_centroids[i, :10]:
-	#  		print("%s" % terms[ind])
+	for i in range(true_k):
+		print(f"Cluster {i}")
+		for ind in order_centroids[i, :10]:
+			print(f"	{terms[ind]}")
 
-	Y = vectorizer.transform(["Nothing is easy in cricket. Maybe when you watch it on TV, it looks easy. But it is not. You have to use your brain and time the ball."])
-	predicted = model.predict(Y)
-	print(predicted)
+	print("Complete")
+	return [vectorizer, model]
+
+
+
+def test(test_data):
+	X = vectorizer.transform(test_data)
+	# print(X)
+	return model.predict(X)
+
+
+
+if __name__ == "__main__":
+	print("ML Script Started")
+	[vectorizer, model] = train()
+	test_data = ["Nothing is easy in cricket. Maybe when you watch it on TV, it looks easy. But it is not. You have to use your brain and time the ball."] + corpus
+	[print(f"Prediction: Cluster {cluster} for data : {data}") for cluster, data in zip(test(test_data), test_data)]
