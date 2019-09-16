@@ -1,70 +1,56 @@
 # Tutorials
 A Repository of Tutorials of all sort that I go through when learning new things
 
-
-## [Merging 2 repoistories together](https://saintgimp.org/2013/01/22/merging-two-git-repositories-into-one-repository-without-losing-file-history/)
-
-
-The basic idea is that we follow these steps:
-	Create a new empty repository New.
-	Make an initial commit because we need one before we do a merge.
-	Add a remote to old repository OldA.
-	Merge OldA/master to New/master.
-	Make a subdirectory OldA.
-	Move all files into subdirectory OldA.
-	Commit all of the file moves.
-	Repeat 3-6 for OldB.
-
-
-A Powershell script for these steps might look like this:
+## Socket.io Cheat Sheet
 ```
-	# Assume the current directory is where we want the new repository to be created
-	# Create the new repository
-	git init
+io.on('connect', onConnect);
 
-	# Before we do a merge, we have to have an initial commit, so we’ll make a dummy commit
-	dir > deleteme.txt
-	git add .
-	git commit -m “Initial dummy commit”
+function onConnect(socket){
 
-	# Add a remote for and fetch the old repo
-	git remote add -f old_a <OldA repo URL>
+  // sending to the client
+  socket.emit('hello', 'can you hear me?', 1, 2, 'abc');
 
-	# Merge the files from old_a/master into new/master
-	git merge old_a/master
+  // sending to all clients except sender
+  socket.broadcast.emit('broadcast', 'hello friends!');
 
-	# Clean up our dummy file because we don’t need it any more
-	git rm .\deleteme.txt
-	git commit -m “Clean up initial file”
+  // sending to all clients in 'game' room except sender
+  socket.to('game').emit('nice game', "let's play a game");
 
-	# Move the old_a repo files and folders into a subdirectory so they don’t collide with the other repo coming later
-	mkdir old_a
-	dir –exclude old_a | %{git mv $_.Name old_a}
+  // sending to all clients in 'game1' and/or in 'game2' room, except sender
+  socket.to('game1').to('game2').emit('nice game', "let's play a game (too)");
 
-	# Commit the move
-	git commit -m “Move old_a files into subdir”
+  // sending to all clients in 'game' room, including sender
+  io.in('game').emit('big-announcement', 'the game will start soon');
 
-	# Do the same thing for old_b
-	git remote add -f old_b <OldB repo URL>
-	git merge old_b/master
-	mkdir old_b
-	dir –exclude old_a,old_b | %{git mv $_.Name old_b}
-	git commit -m “Move old_b files into subdir”
+  // sending to all clients in namespace 'myNamespace', including sender
+  io.of('myNamespace').emit('bigger-announcement', 'the tournament will start soon');
+
+  // sending to a specific room in a specific namespace, including sender
+  io.of('myNamespace').to('room').emit('event', 'message');
+
+  // sending to individual socketid (private message)
+  io.to(`${socketId}`).emit('hey', 'I just met you');
+
+  // WARNING: `socket.to(socket.id).emit()` will NOT work, as it will send to everyone in the room
+  // named `socket.id` but the sender. Please use the classic `socket.emit()` instead.
+
+  // sending with acknowledgement
+  socket.emit('question', 'do you think so?', function (answer) {});
+
+  // sending without compression
+  socket.compress(false).emit('uncompressed', "that's rough");
+
+  // sending a message that might be dropped if the client is not ready to receive messages
+  socket.volatile.emit('maybe', 'do you really need it?');
+
+  // specifying whether the data to send has binary data
+  socket.binary(false).emit('what', 'I have no binaries!');
+
+  // sending to all clients on this node (when using multiple nodes)
+  io.local.emit('hi', 'my lovely babies');
+
+  // sending to all connected clients
+  io.emit('an event sent to all connected clients');
+
+};
 ```
-
-
-Note: All my commit on etion's laptop were made with the etion email address that i couldn't verify due to spam restrictions.
-So I had to change all the commit to be kibongesp@gmail.com follwing [this article](https://dev.to/chrisvasqm/how-to-change-the-author-of-all-your-commits-2j7a)
-```
-git filter-branch -f --env-filter "GIT_AUTHOR_NAME='kmurphs'; GIT_AUTHOR_EMAIL='kibongesp@gmail.com'; GIT_COMMITTER_NAME='kmurphs'; GIT_COMMITTER_EMAIL='kibongesp@gmail.com';" HEAD
-```
-then
-```
-git push --force origin master
-```
-
-Then also change email on the laptop
-```
-git config --global user.email "kibongesp@gmail.com"
-```
-This is to change it globally. Remove the --global for only the current repository
