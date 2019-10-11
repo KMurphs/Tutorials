@@ -1,0 +1,16 @@
+{
+  "name": "storedProcedure",
+  "version": "1.0.0",
+  "description": "An example of a stored procedure is given below",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.17.1"
+  }
+}
