@@ -14,6 +14,8 @@ const reducer = (state = 0, action) => {
       return state - action.payload.value;
     case 'RESET':
       return 0;
+    case 'LOAD':
+      return action.payload.value;
     default:
       return state;
   }
@@ -41,6 +43,12 @@ const getValue = () => {
 const setTotal = value => {
   document.getElementById('grand-total').innerHTML = value;
 };
+/**
+ * Sets the total value as returned by the store
+ */
+const setTotalCopy = value => {
+  document.getElementById('grand-total-copy').innerHTML = value + `${value > 0 ? ' - You\'re doing gooood man': ' - Danger! Your Store is in the Negative'}`;
+};
 
 /*/************************
   PART 3: ACTION CREATORS
@@ -55,10 +63,18 @@ const add = () => ({
 });
 
 /**
- * Action Creator. Returns an action of the type 'SUBTRACT'
+ * Action Creator. Returns an action of the type 'SUBTRACT '
  */
 const subtract = () => ({
   type: 'SUBTRACT',
+  payload: { value: getValue() },
+});
+
+/**
+ * Action Creator. Returns an action of the type 'LOAD'
+ */
+const load = () => ({
+  type: 'LOAD',
   payload: { value: getValue() },
 });
 
@@ -75,6 +91,17 @@ const reset = () => ({ type: 'RESET' });
 store.subscribe(() => {
   setTotal(store.getState());
 });
+// Subscribe to updates
+store.subscribe(() => {
+  setTotalCopy(store.getState());
+});
+
+// Update Store Value every 100ms
+setInterval(()=>{
+	document.querySelector('#grand-total-time-updated').innerHTML = `<span>${(new Date()).toString()}<br>Current Store Value<br>${store.getState()}</span>`
+}, 1000)
+
+
 
 // Handle add button click
 document.getElementById('add-btn').addEventListener('click', () => {
@@ -90,3 +117,9 @@ document.getElementById('subtract-btn').addEventListener('click', () => {
 document.getElementById('reset-btn').addEventListener('click', () => {
   store.dispatch(reset());
 });
+
+// Handle load button click
+document.getElementById('load-btn').addEventListener('click', () => {
+  store.dispatch(load());
+});
+
