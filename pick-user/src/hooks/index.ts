@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
+
+
 // function useLink<T>(initialValue: T) {
 export const useLink = <T extends unknown>(initialValue: T) => {
   const [value, set] = useState<T>(initialValue);
-  // It can be a class with useful methods, like this one:
-  // https://github.com/VoliJS/NestedLink/blob/master/valuelink/src/link.ts
-  // But we just use the plain object here to illustrate an idea.
-  // console.trace(initialValue, value)
   return {value, set};
 }
   
@@ -21,7 +19,7 @@ export const useBoundLink = (source: any):{ value: any, set: (value: any)=>void}
   const boundValue = source.value === undefined || source.set === undefined ? source : source.value
   const {value, set} = useLink( boundValue );
   
-  // If the value changes, execute link.set( value ) after the render.
+  // If the value changes, execute link.set( boundValue ) after the render.
   useEffect(() => set( boundValue ), [ boundValue ]);
   
   return {value, set};
@@ -35,6 +33,7 @@ export const useThrottle = <F extends (...args: any[])=>void>(immediateFn: F, fu
   
   // Create the ref to store timer.
   const timer = useRef<NodeJS.Timeout|null>( null );
+  
   
   // Support function to clear timer 
   const cancel = () => {
