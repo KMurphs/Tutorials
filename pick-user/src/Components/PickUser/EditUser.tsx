@@ -1,6 +1,7 @@
 import React from 'react';
 import './PickUser.css';
-import { UserLink, useLink } from './PickUser';
+import { UserLink } from './PickUser';
+import { useLink } from '../../hooks';
 import UserList from './UserList';
 import DelayedInput from './DelayedInput';
 

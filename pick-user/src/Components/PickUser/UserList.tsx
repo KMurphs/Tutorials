@@ -1,6 +1,7 @@
 import React from 'react';
 import './PickUser.css';
-import { userToString, useSafeLink, useIO, TUser } from './PickUser';
+import { userToString, TUser } from './PickUser';
+import { useSafeLink, useIO } from '../../hooks';
 
 
 

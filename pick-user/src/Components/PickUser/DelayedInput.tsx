@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBoundLink, useThrottle } from './PickUser';
+import { useBoundLink, useThrottle } from '../../hooks';
 
 type Props = {
   $value: {value: string, set: (value: string)=>void};
