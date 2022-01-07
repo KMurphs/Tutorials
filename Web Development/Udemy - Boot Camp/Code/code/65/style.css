@@ -1,0 +1,17 @@
+img{ 
+	width: 30%; 
+	float: left; /*Images do create spaces between them, it's a html thing. Float get rid of that. These spaces do not belong to the img boxes*/
+	margin: 1.66%; /*3 images occupy 90%, the 10% is divided into 6 parts*/
+}
+
+p{
+	font-family: open-sans;
+	margin-left: 1.66%;
+	font-size: 23px;
+	font-weight: 800;
+	text-transform: uppercase;
+
+	border-bottom: 2px solid #f1f1f1;
+	width: 30%;
+	padding-bottom: 10px;
+}

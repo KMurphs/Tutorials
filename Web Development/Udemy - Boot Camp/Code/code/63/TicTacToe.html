@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tic Tac Toe Game</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<style type="text/css">
+		table{
+			width: 50%;
+			background-color: yellow;	
+			margin: auto;
+			border-spacing: 0px;
+		}
+
+
+		td{
+			width: 33.3%;
+			padding: 0;
+			padding-bottom: 33%;
+			border: 1px blue solid;
+			margin: -1px;
+			position: relative;
+		}
+		tr td:nth-of-type(1){		
+			border-left-width: 0px;
+		}
+		tr td:nth-of-type(3){		
+			border-right-width: 0px;
+		}
+
+		tr:nth-of-type(1) td{
+			border-top-width: 0px;
+		}
+		tr:nth-of-type(3) td{
+			border-bottom-width: 0px;
+		}
+
+
+
+		.content{
+			position: absolute;
+
+			/*One possibility*/
+			/*bottom: 38%;
+    		right: 45%;*/
+
+    		/*Or another one*/
+		    bottom: 0%;
+		    right: 0%;
+		    top: 0;
+		    left: 0;
+		    text-align: center;
+		    padding-top: 35%;
+		}
+
+		td:hover{
+			border: 0 red solid;
+			border-width: 1px;
+			background-color: orange;
+			/*margin: -2px;*/
+		}
+
+	</style>
+</head>
+<body>
+	<table>
+		<tbody>
+			<tr>
+				<td><div class="content">1</div></td>
+				<td><div class="content">1</div></td>
+				<td><div class="content">1</div></td>
+			</tr>	
+			<tr>
+				<td><div class="content">1</div></td>
+				<td><div class="content">1</div></td>
+				<td><div class="content">1</div></td>
+			</tr>	
+			<tr>
+				<td><div class="content">1</div></td>
+				<td><div class="content">1</div></td>
+				<td><div class="content">1</div></td>
+			</tr>
+		</tbody>
+	</table>	
+</body>
+</html>

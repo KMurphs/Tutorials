@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Studying Forms</title>
+</head>
+<body>
+
+<form action="http://www.wikipedia.org">
+	<label for="FirstName">First Name: </label>
+	<input type="text" id="FirstName" name="FirstName" placeholder="John" required>
+
+	<label for="LastName">Last Name: </label>
+	<input type="text" id="LastName" name="LastName" placeholder="Smith" required>
+	<p></p>
+	
+	<label for="Male">Male: </label>
+	<input type="radio" name="Gender" value="Male" id="Male">
+	<label for="Female">Female: </label>
+	<input type="radio" name="Gender" value="Female" id="Female">
+	<label for="Other">Other: </label>
+	<input type="radio" name="Gender" value="Other" id="Other">
+	<p></p>
+
+	<label for="Email">Email: </label>
+	<input type="email" name="Email" placeholder="youremail@domain.com" required>
+	<label for="Password">Password: </label>
+	<input type="password" name="Password" placeholder="your password" required minlength="5" maxlength="10">
+    <label for="password_pattern">Password:</label>
+    <input type="password" name="password_pattern" id="password_pattern" pattern=".{5,10}" placeholder="your password" required title="5 to 10 characters">
+	<p></p>
+
+	<label for="birthday">Birthday: </label>
+	<select id="birthday" placeholder="month">
+		<option>January</option>
+		<option>February</option>
+	</select>
+	<select id="birthday" placeholder="month">
+		<option>January</option>
+		<option>February</option>
+	</select>
+	<select id="birthday" placeholder="month">
+		<option>January</option>
+		<option>February</option>
+	</select>
+	<p></p>
+
+	<p>I agree to the terms and conditions <input type="checkbox" name="TnDs"></p>
+	
+	<p></p>
+
+	<button>Submit</button>
+</form>
+
+</body>
+</html>

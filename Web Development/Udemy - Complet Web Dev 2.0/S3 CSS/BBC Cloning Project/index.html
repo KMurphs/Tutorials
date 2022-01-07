@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+    <head>  
+        <title>Accessing Elements</title>
+    </head>
+
+    <body>
+    	<p id="text">Hello World!</p>
+    	<script type="text/javascript">
+        	var text = document.getElementById('text');
+        	text.innerHTML = 'Changed';
+        	alert(text.innerHTML);
+        </script>
+    </body>
+</html>

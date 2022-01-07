@@ -1,0 +1,16 @@
+#myButton{
+    width: 400px;
+}
+
+.row{
+    height: 500px;
+    text-align: center;
+}
+
+.Active{
+    background-color: purple;
+}
+
+.Inactive{
+    background-color: yellow;
+}

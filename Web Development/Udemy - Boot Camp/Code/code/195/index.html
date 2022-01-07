@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="jumbotron jumbotron-fluid bg-primary" id="jumbotron">
+			<div class="row justify-content-center ">
+				<div class="jumbotron_content col-7 col-lg-5 text-white">
+					<h2>The Great</h2>
+					<h1>RGB(<span id="r_value">211</span>, <span id="g_value">206</span>, <span id="b_value">13</span>)</h1>
+					<h2>Guessing Game</h2>					
+				</div>
+			</div>
+		</div>
+		<div class="row justify-content-center mynavbar">
+			<div class="col-7 col-lg-5">
+				<div class="row nav_adjust">
+					<span class="col-3 navgroup left_group" id="new_color">New Colors</span>
+					<span class="col-5 left_group"></span>
+					<span class="col-2 navgroup right_group" id="easy">Easy</span>
+					<span class="col-2 navgroup right_group "id="hard">Hard</span>			
+				</div>				
+			</div>
+		</div>
+		<div class="row justify-content-center color_space">
+			<div class="col-7 col-lg-5 col7_adjust">
+				<div class="row">
+					<div class="col-4 adjust">
+						<div class="img-thumbnail color"></div>
+					</div>	
+					<div class="col-4 adjust">
+						<div class="img-thumbnail color"></div>
+					</div>	
+					<div class="col-4 adjust">
+						<div class="img-thumbnail color"></div>
+					</div>		
+				</div>	
+			</div>
+			<div class="col-7 col-lg-5 col7_adjust hard" id="hard_space">
+				<div class="row">
+					<div class="col-4 adjust">
+						<div class="img-thumbnail color"></div>
+					</div>	
+					<div class="col-4 adjust">
+						<div class="img-thumbnail color"></div>
+					</div>	
+					<div class="col-4 adjust">
+						<div class="img-thumbnail color"></div>
+					</div>		
+				</div>	
+			</div>
+		</div>
+		<div class="feedback text-light bg-danger invisible" id="feedback">
+			<h2>You have won!</h2>		
+		</div>				
+
+
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="color_game.js"></script>
+</body>
+</html>

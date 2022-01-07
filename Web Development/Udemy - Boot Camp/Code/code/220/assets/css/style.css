@@ -1,0 +1,82 @@
+body{
+	background: #EF3B36;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #FFFFFF, #EF3B36);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #FFFFFF, #EF3B36); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.container{
+	width: 50%;
+	border: 5px blue solid;
+	margin: 0 auto;
+}
+
+table{
+	width: 100%;
+	border-spacing: 0;
+}
+
+tr{
+	width: 100%;
+	height: 30px;
+	background-color: white;
+	border-spacing: 0;
+}
+
+td, th{
+	padding: 0 15px;
+	text-align: left;
+	overflow: hidden;
+}
+
+
+thead tr:first-of-type{
+	background-color: steelblue;
+	height: 50px;
+	font-weight: bold;
+	font-size: 1.5rem;
+	text-transform: uppercase;
+	color: white;
+}
+
+thead .fa-plus{
+	float: right;
+}
+
+thead tr:nth-of-type(2){
+	background-color: lightblue;
+	padding: 0 15px;
+	height: 50px;
+}
+
+.new_task{
+	padding: 0 0 0 15px;
+}
+
+thead input{
+	height: 50px;
+	width: 100%;
+	border: none;
+	background-color: transparent;
+	line-height: 1.5rem;
+	font-size: 1.25rem;
+	outline: none;
+}
+
+tbody tr:nth-child(even){
+	background-color: lightblue;
+}
+
+.fa-trash-alt{
+	margin-right: 15px;
+	color: red;
+}
+
+
+.moves{
+	margin-left: -30px;
+}
+
+.moves:hover{
+	margin-left: 0;
+}

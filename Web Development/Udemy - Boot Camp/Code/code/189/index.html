@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="app.css">
+</head>
+<body>
+
+	<div class="container">
+		<div class="row align-items-center justify-content-center d-flex">
+			<div class="gamecontent">
+				<div class="score">
+					<h2><span id="player1Name" class="player1">Player 1</span> vs <span class="player2" id="player2Name">Player 2</span>  </h2>
+					<h1><span id="player1" class="player1">3</span> to <span id="player2" class="player2">4</span> </h1>
+				</div> 
+				<div class="target d-flex flex-column justify-content-around">
+					<p>Currently playing until match:</p>
+					<h3 id="target">7</h3>
+					<input type="number" name="newtarget" id="newtarget" placeholder="New Match Count">
+					<button class="btn btn-secondary" id="updateMatchCount">Update Match Count</button>
+				</div>
+				<div class="controls d-flex flex-column justify-content-around"> 
+					<button class="btn btn-success player1score" id="player1Score">Player 1 Scores</button>
+					<button class="btn btn-success player2score" id="player2Score">Player 2 Scores</button>
+					<button class="btn btn-dark" id="resetMatch">Player Reset Scores</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="gameTracker.js"></script>
+</body>
+</html>
