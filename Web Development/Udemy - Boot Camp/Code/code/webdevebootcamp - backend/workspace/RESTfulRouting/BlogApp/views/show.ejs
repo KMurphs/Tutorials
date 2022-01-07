@@ -1,0 +1,31 @@
+<% include partials/header %>
+
+<div class="ui main text container segment">
+    <div class="ui huge header">
+        <%= blog.title %>
+    </div>
+    <div class="ui top attached">
+        <div class="item">
+            <img src='<%= blog.image %>' class="ui centered rounded image">
+            <div class="content">
+                <span><%= blog.created.toDateString() %></span>
+            </div>
+            <div class="description">
+                <!--If you change the usual equal sign from the code <%= %>
+                and replace it with a - (as in <%- %>), then the expression is evaluated
+                and HTML can be rendered. PS The user can then enter HTML
+                in the field have it treated as such here when displayed
+                The Danger is that the user can then enter the folowing:
+                <script>I hacked your website! Ahahahah! (*Evil laugh*)</script>
+                Therefore, yu need to SANITIZE your input (third party module)-->
+                <p><%- blog.body %></p>
+            </div>
+            <a class='ui orange basic button' href='<%= blog._id %>/edit'>Edit</a>
+            <form method="POST" action='<%= blog._id %>?_method=DELETE' id='deleteForm'>
+                <button class="ui red basic button">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<% include partials/footer %>

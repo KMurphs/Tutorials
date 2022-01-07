@@ -1,0 +1,17 @@
+<h1>Welcome to the posts page</h1>
+
+<h2>Here is a list of current posts: </h2>
+
+
+<!--This is used for logic and control flow, stuff that aren't supposed to be displayed on a page-->
+<% %> 
+<!--This is used for stuff that is supposed to be displayed on a page-->
+<%= %> 
+
+
+<ul>
+    <% posts.forEach(function(post){ %>
+        <li> <%= post.title %> - <strong><%= post.author %> </strong></li>
+    <% }) %>
+</ul>
+

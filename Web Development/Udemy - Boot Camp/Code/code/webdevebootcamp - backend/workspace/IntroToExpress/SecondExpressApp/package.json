@@ -1,0 +1,16 @@
+{
+  "name": "secondexpressapp",
+  "version": "1.0.0",
+  "description": "This is my second express app",
+  "main": "app.js",
+  "dependencies": {
+    "cat-me": "^1.0.3",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

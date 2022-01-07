@@ -1,0 +1,30 @@
+<link rel="stylesheet" type="text/css"  href="/app.css">
+<!--option 2-->
+<!--We will instruct express to serve the public directory, it will also -->
+<!--look for file in there before generating an error-->
+
+<!--option 1-->
+<style>
+    body{
+        color: purple;
+    }
+</style>
+
+
+<h1>Welcome to the posts page</h1>
+
+<h2>Here is a list of current posts: </h2>
+
+
+<!--This is used for logic and control flow, stuff that aren't supposed to be displayed on a page-->
+<% %> 
+<!--This is used for stuff that is supposed to be displayed on a page-->
+<%= %> 
+
+
+<ul>
+    <% posts.forEach(function(post){ %>
+        <li> <%= post.title %> - <strong><%= post.author %> </strong></li>
+    <% }) %>
+</ul>
+
